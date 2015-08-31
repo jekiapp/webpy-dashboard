@@ -2,4 +2,5 @@ upload/
 sessions/
 logs/
 .*
+index.p*
 !.gitignore
