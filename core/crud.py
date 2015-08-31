@@ -182,7 +182,7 @@ class crud(controller):
 			data = {field['field']:self.get_val(result[field['field']] ,field['type']) for field in self.fields }
 			
 			cont = self.form(self.fields,data)
-			self.param.update({'content':cont})
+			self.param.update({'content':cont});
 		return self.render(self.view,self.param)
 	
 	def update(self,id,data):

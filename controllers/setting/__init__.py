@@ -1,3 +1,4 @@
 import web
-def setting():
-	web.seeother("user/")
+class setting:
+	def index(self):
+		web.seeother("user/")
