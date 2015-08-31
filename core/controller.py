@@ -7,10 +7,11 @@ class controller():
 	action = ""
 	image_url = "/image/"
 	m_menu = m1()
-	js = []
-	css = []
-	param = {}
+	
 	def __init__(self):
+		self.js = []
+		self.css = []
+		self.param = {}
 		self.session = web.config._session
 		if self.session.get("nama") == None: 
 			raise web.seeother("/login/")

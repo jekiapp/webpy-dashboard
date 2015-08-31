@@ -3,7 +3,8 @@ import sys, os, exceptions, traceback,signal
 import web
 
 web.config.debug = True
-if web.config.debug: os.kill(os.getpid(), signal.SIGINT)
+if web.config.debug:
+	os.kill(os.getpid(), signal.SIGINT)
 abspath = os.path.dirname(__file__)
 sys.path.append(abspath)
 os.chdir(abspath)
