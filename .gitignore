@@ -1,0 +1,4 @@
+upload/
+sessions/
+.*
+!/.gitignore
