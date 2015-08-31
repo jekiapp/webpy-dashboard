@@ -39,7 +39,7 @@ class user(crud):
 		self.fields.pop(2)
 
 		if data and 'reset_password' in data:
-			return self.reset_password()
+			return self.reset_password(id)
 		elif data and 'simpan_hak' in data:
 			self.simpan_hak(id,data)
 			self.redirect(self.base_url()+"edit/"+id+"/")
@@ -55,7 +55,7 @@ class user(crud):
 				hak = data[str(s['id'])]
 				self.model.update_hak(id,s['id'],hak)
 	
-	def reset_password(self):
+	def reset_password(self,id):
 		import random,string
 		from library.globals import encode_json
 		
