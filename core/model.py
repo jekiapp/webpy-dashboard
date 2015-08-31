@@ -7,7 +7,7 @@ from warnings import filterwarnings
 class model():
 	host = 'localhost'
 	user = 'root'
-	password = 'asmarahadi123'
+	password = 'jaki'
 	database = 'radiaranai'
 	
 	def __init__(self):
