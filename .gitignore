@@ -1,4 +1,4 @@
 upload/
 sessions/
 .*
-!/.gitignore
+!.gitignore
