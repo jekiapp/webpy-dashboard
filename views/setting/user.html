@@ -1,0 +1,25 @@
+$def with(content,menu=None)
+$:content
+<div class='edit_password'>
+	<input type='submit' value="Reset Password" onclick="reset_password()"/>
+	<p>Tekan tombol ini untuk me-reset password, lalu catat password yang akan muncul</p>
+</div>
+<form method='post'>
+<div class='edit_menu'>
+
+	$for m in menu:
+	<div class='box_menu'>
+		<div class='menu'>$m</div>
+		$for s in menu[m]:
+		<div style='margin:10px;'>
+			<div class='sub_menu'>$s['sub_menu'] : </div>
+			<div>
+			<label><input type='radio' $cond(s['hak']==0,"checked") value='0' name='$s['id']'/> disable</label>
+			<label><input type='radio' $cond(s['hak']==1,"checked") value='1' name='$s['id']'/> read</label>
+			<label><input type='radio' $cond(s['hak']==2,"checked") value='2' name='$s['id']'/> read & write</label>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="pDiv"><input name='simpan_hak' type="submit" value="Simpan" class="ui-button ui-widget ui-state-default ui-corner-all" role="button"/><input type="reset" value="Clear" class="ui-button ui-widget ui-state-default ui-corner-all" role="button"/></div>
+</form>

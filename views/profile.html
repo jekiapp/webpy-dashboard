@@ -1,0 +1,24 @@
+$def with(data,pesan)
+<div class='profile'>
+<h3>Data Profil : </h3>
+<div>User : $data['username']</div>
+<div style='float:right'>
+<img  src="/image/f/$data['foto']_thumb"/>
+</div>
+<div>Nama : $data['nama']</div>
+<div>Admin : $data['admin']</div>
+</div>
+
+<div class='update_password'>
+	<h3>Ganti Password</h3>
+	<div class='pesan'>$:pesan</div>
+	<form method='post'>
+	<div>Password : </div>
+	<div><input type='password' name='password' /></div>
+	<div>Ulangi Password : </div>
+	<div><input type='password' name='ulangi_password' /></div>
+	<div><input type='submit' name='update_password' value='Kirim'/></div>
+	</form>
+	<br/>
+	<br/>
+</div>

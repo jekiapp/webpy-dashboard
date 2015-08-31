@@ -1,0 +1,39 @@
+$def with(content,search,page,pages,tanggal)
+
+$ url = base_url()
+$if search: $ url += "search/"+search+"/"
+$if len(pages)>1 :
+	<div class="page_nav">
+		<a 
+		$if page==1: style="visibility:hidden;" 
+		href="$(url)p/$(page-1)" class="arrow left">&nbsp;</a>
+		<select id="page" onchange="page(this,'$url')">
+		$for p in pages:
+			<option $:cond(p==page,'selected="y"')>$p</option>
+		</select>
+		<a 
+		$if page==pages[-1]: style="visibility:hidden;" 
+		href="$(url)p/$(page+1)" class="arrow right">&nbsp;</a>
+	</div>
+
+<div style="float:right;">
+<form method='post' onsubmit="return search('$base_url()')">
+<div class='search'>
+	<input type='text' id='txt' autocomplete="off" value="$:search"/>
+	<input type='submit'id='btn' value=""/>
+</div>
+</form>
+</div>
+$if tanggal:
+	<div class="tanggal">
+		<a href="javascript:prev_month()" class="arrow left">&nbsp;</a>
+		<div id="bulan">$:bulan(tanggal[0]) - $tanggal[1]</div>
+		<a href="javascript:next_month()" class="arrow right">&nbsp;</a>
+		<form action="$:base_url()nav/" id="frm_month" method="post"><input type="hidden" id="nav" name="nav"/></form>
+	</div>
+
+<div class='container'>
+<table cellpadding='0' cellspacing='0'>
+$:content
+</table>
+</div>

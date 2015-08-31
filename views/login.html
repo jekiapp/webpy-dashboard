@@ -1,0 +1,40 @@
+$def with(error)
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta charset="UTF-8">
+
+
+    <title>Log-in</title>
+    
+    <link rel='stylesheet' href='/static/css/lib/jquery-ui.css'/>
+    <link rel="stylesheet" href="/static/css/login.css">
+  </head>
+
+  <body>
+
+    <div class="login-card">
+
+	<div class='title'><img src="/static/images/logo.gif"  />Log-in</div>
+    $if error : <div class="error">Username atau Password salah</div>
+	<form action="/login/auth/" method="post">
+		<input type="text" name="username" placeholder="Username">
+		<input type="password" name="password" placeholder="Password">
+		<input type="submit" name="login" class="login login-submit" value="login">
+	</form>
+    
+  <div class="login-help">
+    <a href="#">Lupa Password</a>
+  </div>
+</div>
+
+<!-- <div id="error"><img src="https://dl.dropboxusercontent.com/u/23299152/Delete-icon.png" /> Your caps-lock is on.</div> -->
+    <script src='/static/js/lib/jquery.min.js'></script>
+	<script src='/static/js/lib/jquery-ui.min.js'></script>
+
+    
+    
+    
+    
+  </body>
+</html>

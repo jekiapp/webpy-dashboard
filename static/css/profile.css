@@ -1,0 +1,18 @@
+.profile{
+    margin:15px;
+    font-size: 14px;
+
+}
+.update_password{
+    margin:15px;
+    font-size: 14px;
+    margin-top:20px;
+}
+.profile > div, .update_password div{
+    margin:10px;
+    padding-left: 10px;
+}
+.pesan{
+    font-weight:bolder;
+    color: rgb(194, 85, 146);
+}

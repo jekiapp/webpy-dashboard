@@ -1,0 +1,96 @@
+.back{
+	font-size: 13px;
+	color:#5494af;
+	font-weight:bolder;
+  padding:5px 0;
+  padding-left: 23px;
+	text-decoration:none;
+  background: url('/static/images/back.png') no-repeat;
+  background-size: 20px 20px;
+  background-position: 0 50% ;
+}
+.search{
+	display: inline-block;
+	border: 1px solid #ddd;
+	background: #fff url(/static/images/input-shaddow.gif) no-repeat left top;
+	padding: 3px 6px;
+	border-radius: 5px;
+	margin: 5px 0;
+}
+
+.search input[type='submit']{
+	height:15px;
+	width:15px;
+	float:right;
+	border:none;
+	cursor:pointer;
+}
+.search #btn{
+	background: url('/static/images/search.png') no-repeat;
+	background-size: 100%;	
+}
+.search #txt{
+	border:none;
+	
+	padding:0px;
+	float:left;
+	color: #646464;
+	width: 110px; 
+}
+.page_nav{
+	margin:8px 5px;
+	float:left;
+}
+
+.page_nav .arrow{
+	margin:0px 5px;
+}
+.page_nav select{
+	background:white;
+	width: 50px;
+
+	border-radius:5px;
+}
+
+.tanggal{
+	border:solid 1px;
+	padding: 3px 0px;
+	border-radius: 5px;
+	width: 180px;
+	margin: 7px auto;
+	text-align:center;
+
+}
+.tanggal > *{
+	display:inline-block;
+}
+.tanggal #bulan{
+	font-size: 14px;
+}
+
+.arrow{
+
+	text-decoration:none;
+	display:inline-block;
+	height: 20px;
+	width: 20px;
+	border-radius: 5px;
+	
+
+	margin-top: -3px;
+}
+.arrow:hover{
+	background-color: #ddd;
+}
+.left{
+	background-image: url('/static/images/arrow_left.png');
+	background-repeat: no-repeat;
+	background-size: 100%;
+	float:left;
+}
+.right{
+	background-image: url('/static/images/arrow_right.png');
+	background-repeat: no-repeat;
+	background-size: 100%;
+	float:right;
+}
