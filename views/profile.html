@@ -3,7 +3,11 @@ $def with(data,pesan)
 <h3>Data Profil : </h3>
 <div>User : $data['username']</div>
 <div style='float:right'>
-<img  src="/image/f/$data['foto']_thumb"/>
+$if data['foto']:
+	$ src = "/image/f/"+data['foto']+"_thumb"
+$else:
+	$ src = "/static/images/broken.png"
+<img  src="$src"/>
 </div>
 <div>Nama : $data['nama']</div>
 <div>Admin : $data['admin']</div>
