@@ -16,7 +16,7 @@ class quick_count(model):
 			if len(isi)<4: raise;
 			
 			sql = "insert into perolehan_suara values(%s,%s,%s,%s,%s)";
-			#self.query(sql,(nomor,isi['1'],isi['2'],isi['3'],isi['4']));
+			self.query(sql,(nomor,isi['1'],isi['2'],isi['3'],isi['4']));
 			isi = '{"suara_1":"%s","suara_2":"%s","suara_3":"%s","suara_4":"%s"}'% (isi['1'],isi['2'],isi['3'],isi['4']);
 			publish.single(self.topic, str(isi),auth=self.auth,client_id="qc_server");
 		except Exception as e:
