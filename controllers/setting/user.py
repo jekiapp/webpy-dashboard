@@ -1,6 +1,7 @@
 from core.crud import crud
 from models.m_user import m_user
 from hashlib import sha224
+from MySQLdb import IntegrityError
 
 class user(crud):
 	table_name = "user"
@@ -46,6 +47,24 @@ class user(crud):
 		menu = self.model.get_menu(id)
 		self.param.update({"menu":menu})
 		return crud.edit(self,id,data)
+	
+	
+	def insert(self,data):
+		try:
+			crud.insert(self,data);
+		except IntegrityError:
+			cont = self.get_error("Username sudah ada");
+			cont += self.form(self.fields,data)
+			self.param.update({'content':cont});
+	
+	def update(self,id,data):
+		try:
+			crud.update(self,id,data)
+		except IntegrityError:
+			cont = self.get_error("Username sudah ada");
+			cont += self.form(self.fields,data)
+			self.param.update({'content':cont});
+	
 	
 	def simpan_hak(self,id,data):
 		menu = self.model.get_menu(id)
