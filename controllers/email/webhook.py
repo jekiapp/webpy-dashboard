@@ -4,7 +4,7 @@ import hashlib,hmac
 class webhook:
 	def index(self,data):
 		signed_data = 'https://app.radiaranai.com/email/webhook/'
-		mandrill_key = 'dsBFOaCTtBU6IHR_Ry3ViA'
+		mandrill_key = 'XV0LPnOQxNcaH-gBrIdDCw'
 		
 		sorted_key = sorted(data)
 		for k in sorted_key:
@@ -12,12 +12,12 @@ class webhook:
 			signed_data += data[k]
 		expected_signature = self._calc_signature(signed_data, mandrill_key)
 		
-		f = open('upload/post', 'r+')
+		f = open('upload/post', 'w+')
+		
 		for h in web.ctx.headers:
-			f.write(h[1]+" "+h[2]+"\n")
+			f.write(h[0]+" "+h[1]+"\n")
 		f.write(str(expected_signature)+"\n")
 		f.close()
-		
 		#expected_signature
 	
 	def _calc_signature(self, raw, key):
