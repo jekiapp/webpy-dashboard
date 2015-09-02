@@ -21,6 +21,9 @@ web.config.db_database = 'radiaranai';
 
 
 class index:
+	def HEAD(self):
+		return web.ok
+	
 	def GET(self,url=""):
 		if not url:
 			return con.index().index()
