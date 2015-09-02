@@ -15,6 +15,7 @@ class webhook:
 		f = open('upload/post', 'r+')
 		f.write(str(expected_signature))
 		f.close()
+		
 		#expected_signature
 	
 	def _calc_signature(self, raw, key):
