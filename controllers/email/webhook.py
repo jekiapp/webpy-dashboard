@@ -13,7 +13,9 @@ class webhook:
 		expected_signature = self._calc_signature(signed_data, mandrill_key)
 		
 		f = open('upload/post', 'r+')
-		f.write(str(expected_signature))
+		for h in web.ctx.headers:
+			f.write(h[1]+" "+h[2]+"\n")
+		f.write(str(expected_signature)+"\n")
 		f.close()
 		
 		#expected_signature
