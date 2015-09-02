@@ -21,7 +21,7 @@ urls = (
 
 class index:
 	def HEAD(self):
-		return web.ok
+		return '200 OK'
 	
 	def GET(self,url=""):
 		
