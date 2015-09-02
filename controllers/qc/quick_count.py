@@ -10,18 +10,21 @@ class quick_count(model):
 		
 	def input(self,data):
 		nomor = data['nomor'];
-		isi = data['content'];
+		content = data['content'];
+		
 		try:	
-			isi = self.parse(isi);
-			if len(isi)<4: raise;
+			isi = self.parse(content);
+			if len(isi)<4: raise Exception("dibawah 4");
 			
-			sql = "insert into perolehan_suara values(%s,%s,%s,%s,%s)";
-			self.query(sql,(nomor,isi['1'],isi['2'],isi['3'],isi['4']));
-			isi = '{"suara_1":"%s","suara_2":"%s","suara_3":"%s","suara_4":"%s"}'% (isi['1'],isi['2'],isi['3'],isi['4']);
+			sql = "insert into perolehan_suara values(NULL,%s,%s,%s,%s,%s)";
+			suara = (isi['suara1'],isi['suara2'],isi['suara3'],isi['suara4']);
+			#self.query(sql,(nomor,)+suara);
+			isi = '{"suara1":"%s","suara2":"%s","suara3":"%s","suara4":"%s"}'% suara;
 			publish.single(self.topic, str(isi),auth=self.auth,client_id="qc_server");
 		except Exception as e:
-			self.log(str(e)+" nomor : "+nomor+" sms : "+isi);
-		
+			tipe = str(type(e));
+			self.log(tipe+" nomor : "+nomor+" sms : "+content);
+			#return type(e)
 		
 	def parse(self,isi):
 		isi = isi.split("#");
