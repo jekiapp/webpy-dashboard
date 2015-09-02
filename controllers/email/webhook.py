@@ -2,7 +2,8 @@ import web
 import hashlib,hmac
 
 class webhook:
-	def index(self,data):
+	def index(self,data=None):
+		if not data: return
 		signed_data = 'https://app.radiaranai.com/email/webhook/'
 		mandrill_key = 'XV0LPnOQxNcaH-gBrIdDCw'
 		
