@@ -20,6 +20,9 @@ urls = (
 ) 
 
 class index:
+	def HEAD(self):
+		return web.ok
+	
 	def GET(self,url=""):
 		
 		if not url:
