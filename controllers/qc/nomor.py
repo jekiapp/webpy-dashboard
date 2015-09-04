@@ -2,7 +2,7 @@ from core.crud import crud
 from MySQLdb import IntegrityError
 
 class nomor(crud):
-	table_name = "daftar_nomor"
+	table_name = "qc_daftar_nomor"
 	active_menu = "qc"
 	active_sub = "nomor"
 	title = "Daftar Nomor"
@@ -22,6 +22,13 @@ class nomor(crud):
 			return crud.add(self,data)
 		except IntegrityError as i:
 			cont = self.get_error("Error : Nomor sudah ada")
-			cont += self.form(self.fields,data)
-			self.param.update({'content':cont})
-			return self.render(self.view,self.param)
+			self.content += cont
+			return crud.add(self,data)
+	
+	def edit(self,id,data=None):
+		try:
+			return crud.edit(self,id,data)
+		except IntegrityError as i:
+			cont = self.get_error("Error : Nomor sudah ada")
+			self.content += cont
+			return crud.edit(self,id)

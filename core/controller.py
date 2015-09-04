@@ -12,6 +12,7 @@ class controller():
 		self.js = []
 		self.css = []
 		self.param = {}
+		self.content = ""
 		self.session = web.config._session
 		if self.session.get("nama") == None: 
 			raise web.seeother("/login/")
@@ -36,6 +37,7 @@ class controller():
 		
 		template += ".html"
 		view = web.template.frender("views/"+template,globals=self.globals())
+		param.update({'content':self.content});
 		content = view(**param)
 		layout = web.template.frender("views/template.html",globals=self.globals())
 		

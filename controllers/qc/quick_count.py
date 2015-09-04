@@ -3,37 +3,52 @@ from core.model import model
 import paho.mqtt.publish as publish
 
 class quick_count(model):
+	
 	def __init__(self):
 		model.__init__(self);
 		self.topic = "GUEST/qc"
 		self.auth = {"username":"guest","password":""}
+	
+	def index(self,data):
+		try:
+			self.nomor = data['sender'];
+			self.receiver = data['receiver'];
+			self.content = data['content'];
+		except Exception:
+			self.log("param tidak cocok")
+			return web.notfound()
 		
-	def input(self,data):
-		nomor = data['nomor'];
-		content = data['content'];
-		
-		try:	
-			isi = self.parse(content);
-			if len(isi)<4: raise Exception("dibawah 4");
+		try:
+			keyword =  self.content.split(" ")[0].lower();
+			self.value = self.content.split(" ")[1].lower()
+			self.parse_key(keyword,self.value);
+		except Exception as e:
+			tipe = str(type(e))
+			self.log(tipe+self.receiver+" nomor : "+self.nomor+" sms : "+self.content)
+
+	def parse_key(self,kw,value):
+		if kw=="qc":
+			self.qc(value)
 			
-			sql = "insert into perolehan_suara values(NULL,%s,%s,%s,%s,%s)";
-			suara = (isi['suara1'],isi['suara2'],isi['suara3'],isi['suara4']);
-			#self.query(sql,(nomor,)+suara);
+	def qc(self,data):
+		""" keyword QC<spasi>suara1#suara2#suara3#suara4"""
+		try:
+			suara = self.parse(self.value);
+			if len(suara)<4: raise Exception("dibawah 4");
+			
+			sql = "insert into qc_perolehan_suara values(NULL,%s,%s,%s,%s,%s)";
+			self.query(sql,(self.nomor,)+suara);
 			isi = '{"suara1":"%s","suara2":"%s","suara3":"%s","suara4":"%s"}'% suara;
 			publish.single(self.topic, str(isi),auth=self.auth,client_id="qc_server");
 		except Exception as e:
-			tipe = str(type(e));
-			self.log(tipe+" nomor : "+nomor+" sms : "+content);
-			#return type(e)
-		
+			tipe = str(type(e))
+			self.log(tipe+self.receiver+" nomor : "+self.nomor+" sms : "+self.content)
+			
+	
 	def parse(self,isi):
 		isi = isi.split("#");
-		new_isi = {};
-		for i in isi:
-			i = i.split("=");
-			new_isi[i[0]] = i[1];
-		return new_isi; 
+		return tuple([i for i in isi]) 
 	
 	def log(self,txt):
-		q = "insert into log_qc(txt) value(%s)";
+		q = "insert into qc_log(txt) value(%s)";
 		self.query(q,(txt,));
