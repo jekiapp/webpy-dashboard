@@ -37,3 +37,18 @@ $if tanggal:
 $:content
 </table>
 </div>
+
+$if len(pages)>1 :
+	<div class="page_nav">
+		<a 
+		$if page==1: style="visibility:hidden;" 
+		href="$(url)p/$(page-1)" class="arrow left">&nbsp;</a>
+		<select id="page" onchange="page(this,'$url')">
+		$for p in pages:
+			<option $:cond(p==page,'selected="y"')>$p</option>
+		</select>
+		<a 
+		$if page==pages[-1]: style="visibility:hidden;" 
+		href="$(url)p/$(page+1)" class="arrow right">&nbsp;</a>
+	</div>
+

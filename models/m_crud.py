@@ -6,27 +6,17 @@ class m_crud(model):
 		model.__init__(self)
 		self.set_table(table_name)
 	
-	def select(self,fields,limit,page=1):
-		cols="id,"
-		for field in fields:
-			cols += "`"+field['field']+"`,"
-		cols = cols[:-1]
-		
+	def select(self,limit,page=1):
 		page -= 1
 		page *= limit
-		query = "select "+cols+" from "+self.table_name+" limit "+str(page)+","+str(limit)
+		query = "select * from "+self.table_name+" limit "+str(page)+","+str(limit)
 		result = self.get_query(query)
 		query = "select count(*) as count from "+self.table_name
 		count = self.get_query(query)
 		return result,count[0]['count']
 	
-	def select_by_id(self,fields,id):
-		cols=""
-		for field in fields:
-			cols += "`"+field['field']+"`,"
-		cols = cols[:-1]
-		
-		query = "select "+cols+" from "+self.table_name+" where id=%s"
+	def select_by_id(self,id):
+		query = "select * from "+self.table_name+" where id=%s"
 		result = self.get_query(query,(id,))
 		return result[0] if len(result)>0 else False
 	
@@ -37,6 +27,7 @@ class m_crud(model):
 			field += "coalesce(`"+col+"`,''),"
 		field = field[:-1]
 		field +=")"
+		
 		
 		page -= 1
 		page *= limit
@@ -53,7 +44,6 @@ class m_crud(model):
 		col,val = self.get_val(value)
 		sql = "insert into "+self.table_name+"("+col+") values("+val+")"
 		
-		
 		res = self.query(sql)
 		return res
 	
@@ -62,8 +52,6 @@ class m_crud(model):
 		sql = "update "+self.table_name+" set "+val+" where id=%s"
 		
 		res = self.query(sql,(id,))
-		if res['error']:
-			raise Exception(res['error']+" "+sql)
 		return res
 	
 	def delete(self,id):
@@ -85,15 +73,10 @@ class m_transaksi(m_crud):
 		self.bulan = str(bulan)
 		self.tahun = str(tahun)
 	
-	def select(self,fields,limit,page=1):
-		cols="id,"
-		for field in fields:
-			cols += field['field']+","
-		cols = cols[:-1]
-		
+	def select(self,limit,page=1):
 		page -= 1
 		page *= limit
-		query = "select "+cols+" from "+self.table_name \
+		query = "select * from "+self.table_name \
 		+" where month("+self.tgl+")='"+self.bulan+"' and year("+self.tgl+")='"+self.tahun+"'"\
 		+" limit "+str(page)+","+str(limit)
 		

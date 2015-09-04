@@ -281,6 +281,15 @@ h3 {
 	font-size: 14px;
 	padding: 5px;
 }
+.main .warning{
+	background: rgb(255, 216, 0);
+	border: solid 3px rgb(247, 131, 58);
+	margin: 4px;
+	
+	font-weight: bolder;
+	font-size: 14px;
+	padding: 5px;
+}
 .main .pDiv{
 	background: url(/static/images/wbg.gif) repeat-x 0 -1px;
   border: 1px solid #ccc;

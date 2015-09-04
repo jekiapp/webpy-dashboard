@@ -23,9 +23,9 @@ class m_setting(model):
 		model.__init__(self)
 	
 	def get_setting(self):
-		query = "select * from setting_qc"
+		query = "select * from qc_setting"
 		return self.get_query(query)[0]
 		
 	def update_setting(self,data):
-		sql = "update setting_qc set total_suara=%s"
+		sql = "update qc_setting set total_suara=%s"
 		self.query(sql,(data['total_suara'],))

@@ -29,7 +29,12 @@ class user(crud):
 	
 	def add(self,*par):
 		self.add_state = True
-		return crud.add(self,*par)
+		try:
+			return crud.add(self,*par);
+		except IntegrityError:
+			cont = self.get_error("Username sudah ada");
+			self.content += cont
+			return crud.add(self,*par)
 	
 	def edit(self,id,data=None):
 		self.add_state = False
@@ -44,27 +49,18 @@ class user(crud):
 		elif data and 'simpan_hak' in data:
 			self.simpan_hak(id,data)
 			self.redirect(self.base_url()+"edit/"+id+"/")
+		
 		menu = self.model.get_menu(id)
 		self.param.update({"menu":menu})
-		return crud.edit(self,id,data)
-	
-	
-	def insert(self,data):
+		
+		
 		try:
-			crud.insert(self,data);
+			return crud.edit(self,id,data);
 		except IntegrityError:
 			cont = self.get_error("Username sudah ada");
-			cont += self.form(self.fields,data)
-			self.param.update({'content':cont});
-	
-	def update(self,id,data):
-		try:
-			crud.update(self,id,data)
-		except IntegrityError:
-			cont = self.get_error("Username sudah ada");
-			cont += self.form(self.fields,data)
-			self.param.update({'content':cont});
-	
+			self.content += cont
+			return crud.edit(self,id,data)
+
 	
 	def simpan_hak(self,id,data):
 		menu = self.model.get_menu(id)

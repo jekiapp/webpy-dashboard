@@ -3,34 +3,34 @@ from models.m_crud import m_crud,m_transaksi
 from library.globals import hilang_titik,encode_date,redirect,dict_val,base_url,img_url
 from datetime import date
 import web,traceback,sys
-
+from MySQLdb import IntegrityError
 
 class crud(controller):
 	decimalpoint = '%.0f' #tanpa desimal
-	limit = 10
+	limit = 25
 	transaksi = False
 	tanggal = None
 	
-	def __init__(self,table_name,transaksi=False):
+	def __init__(self,table_name="",transaksi=False):
 		self.transaksi = transaksi
 		
 		self.CN = self.active_sub = self.__class__.__name__ 
 		if not hasattr(web.config._session,self.CN): setattr(web.config._session,self.CN,{})
-		if not hasattr(self,'model'):
-			if not transaksi:
-				try:
-					del getattr(web.config._session,self.CN)['bulan'] 
-					del getattr(web.config._session,self.CN)['tahun']
-				except: pass
-				self.model = m_crud(table_name)
-			else:
-				if not 'bulan' in getattr(web.config._session,self.CN):
-					getattr(web.config._session,self.CN)['bulan'] = date.today().month
-					getattr(web.config._session,self.CN)['tahun'] = date.today().year
-				self.tanggal=(getattr(web.config._session,self.CN)['bulan'],\
-							getattr(web.config._session,self.CN)['tahun'])
-				self.model = m_transaksi(table_name)
-			
+		
+		if not transaksi:
+			try:
+				del getattr(web.config._session,self.CN)['bulan'] 
+				del getattr(web.config._session,self.CN)['tahun']
+			except: pass
+			if not hasattr(self,'model'): self.model = m_crud(table_name)
+		else:
+			if not 'bulan' in getattr(web.config._session,self.CN):
+				getattr(web.config._session,self.CN)['bulan'] = date.today().month
+				getattr(web.config._session,self.CN)['tahun'] = date.today().year
+			self.tanggal=(getattr(web.config._session,self.CN)['bulan'],\
+						getattr(web.config._session,self.CN)['tahun'])
+			if not hasattr(self,'model'): self.model = m_transaksi(table_name)
+		
 		controller.__init__(self)
 		self.css.extend(["lib/apprise","crud"])
 		self.js.append("lib/apprise")
@@ -50,7 +50,7 @@ class crud(controller):
 			
 			page = int(page)
 			if page==0: raise
-			result,count = self.model.select(self.fields,self.limit,page)
+			result,count = self.model.select(self.limit,page)
 			
 			return self.list(result,count,page)
 		except: 
@@ -112,7 +112,8 @@ class crud(controller):
 		if pages and page>len(pages) : raise
 		
 		list_content = self.get_list(self.fields, row,self.hak_akses==2)
-		self.param.update({"content":list_content,"tanggal":self.tanggal,"page":page,"pages":pages,"search":search})
+		self.param.update({"tanggal":self.tanggal,"page":page,"pages":pages,"search":search})
+		self.content += list_content
 		return self.render(self.view, self.param)
 	
 	def add(self,data=None):
@@ -121,27 +122,33 @@ class crud(controller):
 		self.action = "Tambah"
 		
 		if data and 'simpan' in data:
-			self.insert(data)
-		else:
-			cont = self.form(self.fields)
-			self.param.update({'content':cont})
+			self.insert(data,self.transaksi)
+		
+		cont = self.form(self.fields)
+		self.content += cont
 		return self.render(self.view,self.param)
 	
-	def insert(self,data):
+	def insert(self,data,snb=True):
 		valid_value,error = self.validate(data)
 		
 		if error:
 			cont = ""
 			for m in error:
 				cont += self.get_error(m)
-			cont += self.form(self.fields,data)
 			
-			self.param.update({'content':cont})
+			self.content += cont
 		else:
 			value = dict_val(self.fields,valid_value)
 			
-			self.model.insert(value)
-			raise redirect(base_url())
+			try:
+				self.model.insert(value)
+				self.content += self.get_sukses('Data Berhasil Disimpan')
+				
+				if snb: raise redirect(base_url())
+			except IntegrityError as e:
+				col = e[1].split(" ")[-1]; val = e[1].split(" ")[2]
+				error = self.get_error(self.colName(col[1:-1])+" : "+val[1:-1]+" sudah ada")
+				self.content += error
 	
 	def validate(self,data):
 		error = []
@@ -176,13 +183,13 @@ class crud(controller):
 		if data and 'simpan' in data:
 			self.update(id,data)
 		else:
-			result = self.model.select_by_id(self.fields,id)
+			result = self.model.select_by_id(id)
 			if not result:
 				return web.notfound()
 			data = {field['field']:self.get_val(result[field['field']] ,field['type']) for field in self.fields }
 			
-			cont = self.form(self.fields,data)
-			self.param.update({'content':cont})
+		cont = self.form(self.fields,data)
+		self.content += cont
 		return self.render(self.view,self.param)
 	
 	def update(self,id,data):
@@ -191,16 +198,18 @@ class crud(controller):
 			cont = ""
 			for m in error:
 				cont += self.get_error(m)
-			cont += self.form(self.fields,data)
 			
-			self.param.update({'content':cont})
+			self.content += cont
 		else:
 			value = dict_val(self.fields,valid_value)
-			
-			self.model.update(id,value)
-			cont = self.get_sukses('Data Berhasil Disimpan')+self.form(self.fields,data)
-			self.param.update({'content':cont})
-			#raise redirect(base_url())
+			try:
+				self.model.update(id,value)
+				self.content += self.get_sukses('Data Berhasil Disimpan')
+			except IntegrityError as e:
+				col = e[1].split(" ")[-1]; val = e[1].split(" ")[2]
+				error = self.get_error(self.colName(col[1:-1])+" : "+val[1:-1]+" sudah ada")
+				self.content += error
+	
 	
 	def delete(self,id):
 		return self.model.delete(id)
@@ -234,11 +243,15 @@ class crud(controller):
 		return c
 	
 	def colName(self,field):
-		if 'title' in field:
-			return field['title']
-		col = field['field']
+		if type(field)==dict:
+			if 'title' in field:
+				return field['title']
+			col = field['field']
+		else: col=field
+		
 		col = col.replace("_"," ")
-		col = col.title()
+		if not all([x.isupper() for x in col]): 
+			col = col.title()
 		return col
 	
 	def get_val(self,val,tipe):
@@ -275,6 +288,9 @@ class crud(controller):
 	
 	def get_sukses(self,str):
 		return "<div class='sukses'>"+str+"</div>"
+	
+	def get_warning(self,str):
+		return "<div class='warning'>"+str+"</div>"
 	
 	
 	############## ADD #####################
