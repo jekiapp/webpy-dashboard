@@ -5,8 +5,7 @@ from library.globals import base_url
 class lap_surveyor(crud):
 	active_menu = "qc"
 	active_sub = "surveyor"
-	title = "Laporan Surveyor"
-	view = "qc_lapsurveyor"
+	title = "Data Survey Dobel"
 	def __init__(self):
 		crud.__init__(self)
 		self.hak_akses = 1
@@ -20,11 +19,8 @@ class lap_surveyor(crud):
 					{'field':'nama_surveyor','type':'text','search':1},
 					{'field':'TPS','type':'text','search':1},
 					]
-		surveyed,jml_dpt = self.model.get_suara();
-		surveystr = "Suara Tersurvey "+str(surveyed)+\
-			" dari "+str(jml_dpt)+" ("+str(round(float(surveyed)/float(jml_dpt)*100,2))+")%" 
-		self.param.update({"surveyed":surveystr});
 		
+
 	def get_list(self,fields,data,write=True):
 		c = ""
 		for field in fields:
@@ -49,16 +45,12 @@ class lap_surveyor(crud):
 				c += "<td>"+self.get_cell(rw[field['field']],field['type'])+"</td>"
 			c += "</tr>"
 		return c
+
 class m_lapsurveyor(m_crud):
 	def __init__(self):
 		m_crud.__init__(self,"qc_surveyor");
 	
-	def get_suara(self):
-		sql = "select (select count(*) from (select a.NIK from qc_surveyor a join"\
-				" qc_dpt b on a.NIK=b.NIK group by a.NIK) c) as surveyed,"\
-				"(select count(*) from qc_dpt) as jml_dpt"
-		res = self.get_query(sql);
-		return res[0]['surveyed'],res[0]['jml_dpt']
+	
 	def select(self,limit,page=1):
 		page -= 1
 		page *= limit
