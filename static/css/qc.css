@@ -1,3 +1,14 @@
 .surveyed{
 	background: pink;
 }
+.group1:hover td,.group2:hover td{
+	background: inherit !important;
+}
+.group1{
+	background:pink;
+	color: black;
+}
+.group2{
+	color: black;
+	background: orange;
+}

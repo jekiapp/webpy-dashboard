@@ -78,7 +78,8 @@ class crud(controller):
 			result,count = self.model.search(cols,cari,self.limit,page)
 			
 			return self.list(result,count,page,cari)
-		except: 
+		except Exception as e: 
+			#return e
 			del getattr(web.config._session,self.CN)['page']
 			raise web.seeother(base_url())
 	
@@ -105,14 +106,16 @@ class crud(controller):
 			raise web.seeother(base_url())
 	
 	def list(self,row,count,page,search=None):
-		self.view = "crud_list"
-		self.js = ["list"]
+		if self.view=="index": self.view = "crud_list" 
+		
+		self.js.append("list")
 		
 		pages = [x for x in range(1,(count/self.limit)+(1 if count%self.limit==0 else 2)) if count!= 0]
 		if pages and page>len(pages) : raise
 		
 		list_content = self.get_list(self.fields, row,self.hak_akses==2)
-		self.param.update({"tanggal":self.tanggal,"page":page,"pages":pages,"search":search})
+		if self.transaksi: self.param.update({"tanggal":self.tanggal});
+		self.param.update({"page":page,"pages":pages,"search":search})
 		self.content += list_content
 		return self.render(self.view, self.param)
 	

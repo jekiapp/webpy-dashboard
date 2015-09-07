@@ -1,4 +1,4 @@
-$def with(content,search,page,pages,tanggal=None)
+$def with(content,search,page,pages,surveyed)
 
 $ url = base_url()
 $if search: $ url += "search/"+search+"/"
@@ -24,13 +24,10 @@ $if len(pages)>1 :
 </div>
 </form>
 </div>
-$if tanggal:
-	<div class="tanggal">
-		<a href="javascript:prev_month()" class="arrow left">&nbsp;</a>
-		<div id="bulan">$:bulan(tanggal[0]) - $tanggal[1]</div>
-		<a href="javascript:next_month()" class="arrow right">&nbsp;</a>
-		<form action="$:base_url()nav/" id="frm_month" method="post"><input type="hidden" id="nav" name="nav"/></form>
-	</div>
+
+<div class="tanggal" style="width: 300px; ">
+	$surveyed
+</div>
 
 <div class='container'>
 <table cellpadding='0' cellspacing='0'>
