@@ -17,6 +17,24 @@ class dpt(crud):
 					{'field':'alamat','type':'text_area','search':1},
 					{'field':'jenis_kelamin','type':'combo','rule':'required','value':jenis_kelamin}
 					]
+		surveyed,jml_dpt = self.model.get_suara();
+		surveystr = "Suara Tersurvey "+str(surveyed)+\
+			" dari "+str(jml_dpt)+" ("+str(round(float(surveyed)/float(jml_dpt)*100,2))+")%" 
+		self.param.update({"surveyed":surveystr});
+	
+	def list(self,row,count,page,search=None):
+		self.view = "dpt_list" 
+		
+		self.js.append("list")
+		
+		pages = [x for x in range(1,(count/self.limit)+(1 if count%self.limit==0 else 2)) if count!= 0]
+		if pages and page>len(pages) : raise
+		
+		list_content = self.get_list(self.fields, row,self.hak_akses==2)
+		if self.transaksi: self.param.update({"tanggal":self.tanggal});
+		self.param.update({"page":page,"pages":pages,"search":search})
+		self.content += list_content
+		return self.render(self.view, self.param)
 	
 	def get_list(self,fields,data,write=True):
 		c = ""
@@ -48,7 +66,12 @@ from models.m_crud import m_crud
 class m_dpt(m_crud):
 	def __init__(self):
 		m_crud.__init__(self,"qc_dpt")
-	
+	def get_suara(self):
+		sql = "select (select count(*) from (select a.NIK from qc_surveyor a join"\
+				" qc_dpt b on a.NIK=b.NIK group by a.NIK) c) as surveyed,"\
+				"(select count(*) from qc_dpt) as jml_dpt"
+		res = self.get_query(sql);
+		return res[0]['surveyed'],res[0]['jml_dpt']
 	def select(self,limit,page=1):
 		page -= 1
 		page *= limit
