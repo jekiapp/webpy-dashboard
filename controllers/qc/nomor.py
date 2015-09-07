@@ -18,6 +18,7 @@ class nomor(crud):
 		self.model.set_table(self.table_name)
 	
 	def add(self,data=None):
+		
 		try:
 			return crud.add(self,data)
 		except IntegrityError as i:
