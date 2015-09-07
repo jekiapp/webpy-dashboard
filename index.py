@@ -1,18 +1,22 @@
 #!/usr/bin/python
 import sys, os, exceptions, traceback,signal
-import web
 
-web.config.debug = True
-if web.config.debug:
-	os.kill(os.getpid(), signal.SIGINT)
 abspath = os.path.dirname(__file__)
 sys.path.append(abspath)
 os.chdir(abspath)
 
-web.config.db_host = 'localhost';
-web.config.db_user = 'root';
-web.config.db_password = 'jaki';
-web.config.db_database = 'radiaranai';
+import web,config
+
+web.config.db_host = config.host;
+web.config.db_user = config.user;
+web.config.db_password = config.password;
+web.config.db_database = config.database;
+web.config.debug = config.debug;
+
+if web.config.debug:
+	os.kill(os.getpid(), signal.SIGINT)
+
+
 
 import controllers.index as con
 urls = (
