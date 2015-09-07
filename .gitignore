@@ -2,3 +2,5 @@ upload/
 sessions/
 logs/
 .*
+config.py
+*.pyc
