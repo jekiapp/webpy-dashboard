@@ -10,9 +10,9 @@ class nomor(crud):
 		crud.__init__(self,self.table_name)
 		
 		self.fields = (
-					{'field':'nama','type':'text','required':1},
-					{'field':'nomor','type':'text','required':1},
-					{'field':'keterangan','type':'text_area'},
+					{'field':'nama','type':'text','required':1,'search':1},
+					{'field':'nomor','type':'text','required':1,'search':1},
+					{'field':'keterangan','type':'text_area','search':1},
 					{'field':'foto','type':'foto'}
 					)
 		self.model.set_table(self.table_name)
