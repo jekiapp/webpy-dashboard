@@ -5,7 +5,7 @@ class nomor(crud):
 	table_name = "qc_daftar_nomor"
 	active_menu = "qc"
 	active_sub = "nomor"
-	title = "Daftar Nomor"
+	title = "Daftar Saksi"
 	def __init__(self):
 		crud.__init__(self,self.table_name)
 		
