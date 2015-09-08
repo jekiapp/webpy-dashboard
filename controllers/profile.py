@@ -33,7 +33,9 @@ class profile():
 			
 			content=content,
 			menu=self.menu,
-			sub_menu = []
+			sub_menu = [],
+			username=self.nama
+			
 		)
 	
 	def update_password(self,data):
