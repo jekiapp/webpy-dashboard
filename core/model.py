@@ -89,5 +89,5 @@ class model():
 		return val[:-1]
 	
 	def escape(self,val):
-		return db.escape_string(val)
+		return db.escape_string(str(val))
 	

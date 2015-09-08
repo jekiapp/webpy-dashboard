@@ -1,27 +1,45 @@
-import web
-import hashlib,hmac
+import web,hashlib,hmac,json
+from core.model import model as m
 
 class webhook:
+	url = 'https://app.radiaranai.com/email/webhook/hook/'
+	db = m()
+	def hook(self,user,data):
+		if not data and not self.auth(user,data): return
+		try:
+			events = json.loads(data['mandrill_events'])
+			for event in events:
+				if event['event']=='inbound':
+					self.inbound(user,event['msg'],event['ts'])
+		except Exception as e:
+			self.db.query("insert into qc_log values(NULL,'"+self.db.escape(e)+"',now())")
 	
-	def index(self,data=None):
-		if not data: return
-		signed_data = 'https://app.radiaranai.com/email/webhook/'
-		mandrill_key = 'XV0LPnOQxNcaH-gBrIdDCw'
+	def inbound(self,user,msg,ts):
+		from_email = msg['from_email']
+		from_name = msg['from_name'] if 'from_name' in msg else None
+		subject = msg['subject'] if 'from_subject' in msg else None
+		text = msg['text']
+		sql = "insert into email_inbox values(NULL,%s,%s,%s,%s,%s,from_unixtime(%s))"
+		self.db.query(sql,(user,from_email,from_name,subject,text,ts))
 		
-		sorted_key = sorted(data)
-		for k in sorted_key:
-			signed_data += k
-			signed_data += data[k]
-		expected_signature = self._calc_signature(signed_data, mandrill_key)
+	def auth(self,user,data):
+		sql = "select email_key from user where username=%s"
+		res = self.db.get_query(sql,(user,));
+		key = res[0]['email_key'];
+		if not key: return False;
 		
-		f = open('upload/post', 'w+')
+		try:
+			signed_data = self.url+user
+			sorted_key = sorted(data)
+			for k in sorted_key:
+				signed_data += k
+				signed_data += data[k]
+			expected = self._calc_signature(signed_data, key)
+			signature = web.ctx.env['HTTP_X_MANDRILL_SIGNATURE']
+			return expected==signature
+		except:
+			return False
 		
-		for h in web.ctx.headers:
-			f.write(h[0]+" "+h[1]+"\n")
-		f.write(str(expected_signature)+"\n")
-		f.close()
-		#expected_signature
-	
 	def _calc_signature(self, raw, key):
 		hashed = hmac.new(key, raw, hashlib.sha1)
 		return hashed.digest().encode("base64").rstrip('\n')
