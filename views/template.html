@@ -1,4 +1,4 @@
-$def with(css,js,title,content,active_menu,active_sub,menu,sub_menu,action=None)
+$def with(css,js,title,content,active_menu,active_sub,menu,sub_menu,username,action=None)
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -42,7 +42,7 @@ $for script in js:
         		href="/$(m['url'])/"
         		>$:m['menu']</a></li>
         	<li class="logout" $:cond(active_menu=='profile',"class='active'")><a href="/logout/">Logout</a></li>
-        	<li class="logout"><a href="/profile/">Profile</a></li>
+        	<li class="logout"><a href="/profile/">Profile : $username</a></li>
         </ul>
         
         <div id="containerHolder">

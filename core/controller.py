@@ -50,7 +50,8 @@ class controller():
 			action=self.action,
 			content=content,
 			menu=self.menu,
-			sub_menu = self.sub_menu
+			sub_menu = self.sub_menu,
+			username=self.username
 		)
 	
 	def get_menu(self):
