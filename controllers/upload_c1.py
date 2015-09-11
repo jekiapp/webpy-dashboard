@@ -5,7 +5,10 @@ from PIL import Image
 class upload_c1:
 	
 	def index(self,data):
-		return data['no_tlp']
+		web.header('Access-Control-Allow-Origin',      '*')
+		web.header('Access-Control-Allow-Credentials', 'true')
+		
+		return "OK!"
 	
 	def upload(self,data=None):
 		if not data and not 'file' in data \
