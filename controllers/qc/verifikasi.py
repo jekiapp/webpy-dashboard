@@ -3,7 +3,7 @@ from core.crud import crud
 class verifikasi(crud):
 	active_menu = "qc"
 	active_sub = "surveyor"
-	title = "Surveyor"
+	title = "Verifikasi Survey"
 	def __init__(self):
 		crud.__init__(self)
 		self.model = m_verify()
