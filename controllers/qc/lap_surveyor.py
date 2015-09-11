@@ -9,15 +9,14 @@ class lap_surveyor(crud):
 	def __init__(self):
 		crud.__init__(self)
 		self.hak_akses = 1
-		self.css.append("qc");
+		self.css.append("qc/qc");
 		self.model = m_lapsurveyor()
 		self.fields = [
 					{'field':'NIK','type':'text','search':1},
 					{'field':'nama','type':'text','required':1,'search':1},
 					{'field':'alamat','type':'text_area','search':1},
 					{'field':'nik_surveyor','type':'text','required':1,'search':1},
-					{'field':'nama_surveyor','type':'text','search':1},
-					{'field':'TPS','type':'text','search':1},
+					{'field':'nama_surveyor','type':'text','search':1}
 					]
 		
 

@@ -1,0 +1,37 @@
+.c1 tr:hover td {
+    background: white !important;
+}
+.c1 .no{
+    max-width: 20px !important;
+    text-align: left;
+}
+.c1 .left{
+    text-align:left;
+}
+.c1 .center{
+    text-align: center;
+}
+.c1 .uraian{
+    min-width:400px !important;
+    text-align:left;
+}
+.c1 td{
+    min-width:80px !important;
+    text-align:right;
+}
+#container{
+    width: 1100px!important;
+}
+.main,.container{
+    width:870px !important;
+}
+td > div{
+    display:inline-block;
+}
+h3{
+    color:inherit;
+    font-family:initial;
+}
+.c1{
+    width:100%;
+}

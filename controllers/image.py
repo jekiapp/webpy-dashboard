@@ -15,6 +15,7 @@ class image:
 		return fin.read()
 	
 	def upload(self,data=None):
+		if not web.config._session.get("nama"): return web.notfound();
 		if not data and not 'file' in data: return web.notfound();
 		
 		filedir = './upload'
@@ -44,6 +45,7 @@ class image:
 		return encode_json({"url":"/image/f/"+filename,"foto_name":filename})
 	
 	def delete(self,data):
+		if not web.config._session.get("nama"): return web.notfound();
 		filedir = './upload/'
 		foto_name = data.foto_name
 		try:

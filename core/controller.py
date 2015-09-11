@@ -37,7 +37,7 @@ class controller():
 		
 		template += ".html"
 		view = web.template.frender("views/"+template,globals=self.globals())
-		param.update({'content':self.content});
+		if self.content: param.update({'content':self.content});
 		content = view(**param)
 		layout = web.template.frender("views/template.html",globals=self.globals())
 		

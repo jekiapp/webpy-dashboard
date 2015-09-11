@@ -9,7 +9,7 @@ class dpt(crud):
 	def __init__(self):
 		crud.__init__(self)
 		self.model = m_dpt()
-		self.css.append("qc");
+		self.css.append("qc/qc");
 		jenis_kelamin = ['Laki-laki',"Perempuan"]
 		self.fields = [
 					{'field':'NIK','type':'text','required':1,'search':1},
@@ -17,13 +17,14 @@ class dpt(crud):
 					{'field':'alamat','type':'text_area','search':1},
 					{'field':'jenis_kelamin','type':'combo','rule':'required','value':jenis_kelamin}
 					]
+		
+	
+	def list(self,row,count,page,search=None):
+		self.view = "qc/dpt_list" 
 		surveyed,jml_dpt = self.model.get_suara();
 		surveystr = "Suara Tersurvey "+str(surveyed)+\
 			" dari "+str(jml_dpt)+" ("+str(round(float(surveyed)/float(jml_dpt)*100,2))+")%" 
 		self.param.update({"surveyed":surveystr});
-	
-	def list(self,row,count,page,search=None):
-		self.view = "dpt_list" 
 		
 		self.js.append("list")
 		

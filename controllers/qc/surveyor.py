@@ -10,12 +10,26 @@ class surveyor(crud):
 		self.fields = [
 					{'field':'NIK','type':'text','required':1,'search':1},
 					{'field':'nama','type':'text','required':1,'search':1},
+					
+					{'field':'nomor_HP','type':'text'},
 					{'field':'alamat','type':'text_area','search':1},
+					
 					{'field':'nik_surveyor','type':'text','required':1,'search':1},
 					{'field':'nama_surveyor','type':'text','search':1},
-					{'field':'TPS','type':'text','search':1},
+					{'field':'HP_surveyor','type':'text'}
 					]
 	
+	def p(self,p):
+		self.fields = [
+					{'field':'NIK','type':'text','required':1,'search':1},
+					{'field':'nama','type':'text','required':1,'search':1},
+					{'field':'nama_surveyor','type':'text','search':1},
+					{'field':'alamat','type':'text_area','search':1},
+					{'field':'nomor_HP','type':'text'},
+					{'field':'nik_surveyor','type':'text','required':1,'search':1},
+					{'field':'HP_surveyor','type':'text'}
+					]
+		return crud.p(self,p)
 	def add(self,data=None):
 		try:
 			return crud.add(self,data)
@@ -48,8 +62,12 @@ class m_surveyor(m_crud):
 	def __init__(self):
 		m_crud.__init__(self,"qc_surveyor")
 	
+	
 	def insert(self,value):
 		res = m_crud.insert(self,value)
+		sql = "insert into qc_verifikasi_survey values(%s)"
+		self.query(sql,(res['id'],))
+		
 		nik = value['NIK']
 		sql = "select NIK from qc_surveyor where NIK=%s"
 		res = self.get_query(sql,(nik,))

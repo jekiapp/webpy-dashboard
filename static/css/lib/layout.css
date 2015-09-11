@@ -13,9 +13,10 @@ body {
 
 #wrapper {
 	text-align: left;
-	width: 930px;
+	min-width: 930px;
 	margin: 0 auto;
 	min-height:100%;
+	display: inline-block;
 }
 
 /* Logo  ---------------------------------------- */
@@ -56,12 +57,15 @@ h1 span { display: none; }
 /* Main Navigation ---------------------------------------- */
 
 #mainNav {
-	width: 918px;
+	/* width: 918px; */
 	height: 37px;
-	padding: 6px;
+	
 	margin: 0 0 20px 0;
-	background: url(/static/images/top-menu-bg.gif) no-repeat left top; 
-	/* We used a background image making the thick border and the thin one to keep the html structure simple */
+	/* background: url(/static/images/top-menu-bg.gif) no-repeat left top; */ 
+	background: rgb(246, 246, 246);
+	border: solid 4px rgb(221, 221, 221);
+	border-radius:10px;
+	margin-top: 2px;
 }
 
 #mainNav li {
@@ -106,8 +110,9 @@ h1 span { display: none; }
 #container {
 	background: #fff url(/static/images/content.gif) repeat-y left top;
 	border: 1px solid #ddd;
-	width: 918px;
+	min-width: 918px;
 	min-height: 300px;
+	/* display: inline; */
 }
 
 /* Sidebar ---------------------------------------- */
@@ -168,6 +173,7 @@ h2 a:hover { text-decoration: underline; }
 	width: 700px;
 	float: right;
 	padding: 0 19px 0 0;
+	display: inline-block;
 }
 
 h3 {
@@ -184,7 +190,7 @@ h3 {
 }
 .main .container{
 	overflow-x: scroll;
-	width:700px;
+	width: 700px;
 }
 .main table {
 	border: 1px solid #ddd;

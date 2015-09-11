@@ -6,10 +6,11 @@ class m_crud(model):
 		model.__init__(self)
 		self.set_table(table_name)
 	
-	def select(self,limit,page=1):
+	def select(self,limit,page=1,orderby=None):
 		page -= 1
 		page *= limit
-		query = "select * from "+self.table_name+" limit "+str(page)+","+str(limit)
+		orderby = "order by "+orderby if orderby else "order by id desc"
+		query = "select * from "+self.table_name+" "+orderby+" limit "+str(page)+","+str(limit)
 		result = self.get_query(query)
 		query = "select count(*) as count from "+self.table_name
 		count = self.get_query(query)
@@ -20,7 +21,7 @@ class m_crud(model):
 		result = self.get_query(query,(id,))
 		return result[0] if len(result)>0 else False
 	
-	def search(self,cols,txt,limit,page=1):
+	def search(self,cols,txt,limit,page=1,orderby=None):
 		txt = "%%"+txt.replace(' ','%%')+"%%"
 		field = "concat("
 		for col in cols:
@@ -28,11 +29,12 @@ class m_crud(model):
 		field = field[:-1]
 		field +=")"
 		
+		orderby = "order by "+orderby if orderby else  "order by id desc"
 		
 		page -= 1
 		page *= limit
 		query = "select * from "+self.table_name \
-			+" where "+field+" like %s limit "+str(page)+","+str(limit)
+			+" where "+field+" "+orderby+" like %s limit "+str(page)+","+str(limit)
 		
 		result = self.get_query(query,(txt,))
 		query = "select count(*) as count from "+self.table_name\

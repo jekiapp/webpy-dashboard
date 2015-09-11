@@ -16,14 +16,12 @@ class user(crud):
 					{'field':'nama','type':'text','required':1,'search':1},
 					{'field':'password','type':'password','required':1},
 					{'field':'ulangi_password','type':'password','required':1},
-					{'field':'email_key','type':'text'},
 					{'field':'admin','type':'admin','value':[{'key':'0','val':'Tidak'},{'key':'1','val':'Ya'}]},
 					{'field':'foto','type':'foto'}
 					]
 	
 	def p(self,*par):
 		self.fields.append({'field':'last-seen','type':'datetime','title':'Terakhir Login'})
-		del self.fields[2]
 		del self.fields[2]
 		del self.fields[2]
 		

@@ -13,7 +13,7 @@ class crud(controller):
 	
 	def __init__(self,table_name="",transaksi=False):
 		self.transaksi = transaksi
-		
+		setattr(self,'base_url',base_url)
 		self.CN = self.active_sub = self.__class__.__name__ 
 		if not hasattr(web.config._session,self.CN): setattr(web.config._session,self.CN,{})
 		
@@ -215,6 +215,7 @@ class crud(controller):
 	
 	
 	def delete(self,id):
+		if self.hak_akses !=2: return web.notfound()
 		return self.model.delete(id)
 	
 	""" LIST """
@@ -222,7 +223,7 @@ class crud(controller):
 	def get_list(self,fields,data,write=True):
 		c = ""
 		if write:
-			c += "<th class='add'><a href='"+base_url()+"add/'></a></th>"
+			c += "<th class='add'><a href='"+self.base_url()+"add/'></a></th>"
 		
 		for field in fields:
 			c += "<th>"+self.colName(field)+"</th>"
@@ -236,7 +237,7 @@ class crud(controller):
 			className = "class='odd'" if (i+1)%2==0 else "" 
 			c += "<tr "+className+" id='"+id+"'>"
 			if write:
-				c += "<td class='action'><a title='Edit' href='"+base_url()+"edit/%(id)s/' class='edit'></a>"\
+				c += "<td class='action'><a title='Edit' href='"+self.base_url()+"edit/%(id)s/' class='edit'></a>"\
 					"<a title='Hapus' href='javascript:void(0)' onclick='del(this,%(id)s)' class='delete'></a></td>"\
 					 % {'id':id}
 			for field in fields:

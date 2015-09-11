@@ -1,0 +1,65 @@
+$def with(dptlk,dptpr,phplk,phppr,surat,sah,disablelk,disablepr)
+<div class='container'>
+<h3 >I. DATA PEMILIH DAN PENGGUNA HAK PILIH</h3>
+<table class='c1'>
+<TR>
+	<td class='no'>NO.</td><td class="left">URAIAN</td><td class="center">LAKI-LAKI</td><td class="center">PEREMPUAN</td><td class="center" style="width:80px;">JUMLAH</td>
+</TR>
+<TR><td class='no'rowspan='6'>A.</td><td colspan='4' class="left">DATA PEMILIH</td></TR>
+<TR><TD class='uraian'>1. Pemilih terdaftar dalam Daftar Pemilih Tetap (DPT)</TD><td>$dptlk['dptlk1']</td><td>$dptpr['dptpr1']</td><td >$(dptlk['dptlk1']+dptpr['dptpr1'])</td>
+<TR><TD class='uraian'>2. Pemilih terdaftar dalam Daftar Pemilih Tetap Tambahan-1 (DPTb-1)</TD><td>$dptlk['dptlk2']</td><td>$dptpr['dptpr2']</td><td >$(dptlk['dptlk2']+dptpr['dptpr2'])</td>
+<TR><TD class='uraian'>3. Pemilih terdaftar dalam Daftar Pemilih Pindahan (DPPh)</TD><td>$dptlk['dptlk3']</td><td>$dptpr['dptpr3']</td><td >$(dptlk['dptlk3']+dptpr['dptpr3'])</td>
+<TR><TD class='uraian'><div style="vertical-align:top"> 4.&nbsp;</div><div>Pemilih Daftar Pemilih Tambahan-2 (DPTb-2)/pengguna KTP atau<br/>
+identitas kependudukan lainnya</div></TD><td>$dptlk['dptlk4']</td><td>$dptpr['dptpr4']</td><td >$(dptlk['dptlk4']+dptpr['dptpr4'])</td>
+<TR><TD class='uraian'>5. Jumlah Pemilih (1+2+3+4)</TD>
+<td>$(dptlk['dptlk1']+dptlk['dptlk2']+dptlk['dptlk3']+dptlk['dptlk4'])</td><td>$(dptpr['dptpr1']+dptpr['dptpr2']+dptpr['dptpr3']+dptpr['dptpr4'])</td><td >$(dptpr['dptpr1']+dptpr['dptpr2']+dptpr['dptpr3']+dptpr['dptpr4']+dptlk['dptlk1']+dptlk['dptlk2']+dptlk['dptlk3']+dptlk['dptlk4'])</td>
+</TR>
+
+<TR><td class='no'rowspan='6'>B.</td><td colspan='4' class="left">PENGGUNA HAK PILIH</td></TR>
+<TR><TD class='uraian'>1. Pengguna hak pilih dalam Daftar Pemilih Tetap (DPT)</TD><td>$phplk['phplk1']</td><td>$phppr['phppr1']</td><td >$(phplk['phplk1']+phppr['phppr1'])</td>
+<TR><TD class='uraian'>2. Pengguna hak pilih dalam Daftar Pemilih Tetap Tambahan-1 (DPTb-1)</TD><td>$phplk['phplk2']</td><td>$phppr['phppr2']</td><td >$(phplk['phplk2']+phppr['phppr2'])</td>
+<TR><TD class='uraian'>3. Pengguna hak pilih dalam Daftar Pemilih Pindahan (DPPh)</TD><td>$phplk['phplk3']</td><td>$phppr['phppr3']</td><td >$(phplk['phplk3']+phppr['phppr3'])</td>
+<TR><TD class='uraian'><div style="vertical-align:top">4.&nbsp;</div><div> Pengguna hak pilih dalam Daftar Pemilih Tambahan-2 (DPTb-2)/<br/>
+pengguna KTP atau identitas kependudukan lainnya</div></TD><td>$phplk['phplk4']</td><td>$phppr['phppr4']</td><td >$(phplk['phplk4']+phppr['phppr4'])</td>
+<TR><TD class='uraian'>5. Jumlah seluruh pengguna Hak Pilih (1+2+3+4)</TD>
+<td>$(phplk['phplk1']+phplk['phplk2']+phplk['phplk3']+phplk['phplk4'])</td><td>$(phppr['phppr1']+phppr['phppr2']+phppr['phppr3']+phppr['phppr4'])</td><td >$(phppr['phppr1']+phppr['phppr2']+phppr['phppr3']+phppr['phppr4']+phplk['phplk1']+phplk['phplk2']+phplk['phplk3']+phplk['phplk4'])</td>
+<tr>
+<td colspan='5' class='left' style="padding:0;">
+<h3 >II. DATA PENGGUNAAN SURAT SUARA</h3>
+</td>
+</tr>
+<TR>
+	<td class='no'>NO.</td><td class="left" colspan='3'>URAIAN</td><td class="center">JUMLAH</td>
+</TR>
+<tr><td class='no'>1.</td><td class='left' colspan='3'>Jumlah surat suara yang diterima termasuk cadangan 2,5 % (2 + 3 + 4)</td><td>$surat['surat1']</td></tr>
+<tr><td class='no'>2.</td><td class='left' colspan='3'>Jumlah surat suara dikembalikan oleh pemilih karena rusak/keliru coblos</td><td>$surat['surat2']</td></tr>
+<tr><td class='no'>3.</td><td class='left' colspan='3'>Jumlah surat suara yang tidak digunakan</td><td>$surat['surat3']</td></tr>
+<tr><td class='no'>4.</td><td class='left' colspan='3'>Jumlah surat suara yang digunakan</td><td>$surat['surat4']</td></tr>
+
+<tr>
+<td colspan='5' class='left' style="padding:0;">
+<h3 >III. DATA JUMLAH SUARA SAH DAN TIDAK SAH</h3>
+</td>
+</tr>
+<TR>
+	<td class='no'>NO.</td><td class="left" colspan='3'>URAIAN</td><td class="center">JUMLAH</td>
+</TR>
+<tr><td class='no'>1.</td><td class='left' colspan='3'>Jumlah Suara Sah Seluruh Calon</td><td>$sah['sah1']</td></tr>
+<tr><td class='no'>2.</td><td class='left' colspan='3'>Jumlah Suara Tidak Sah</td><td>$sah['sah2']</td></tr>
+<tr><td class='no'>3.</td><td class='left' colspan='3'>Jumlah Suara Sah dan Tidak Sah (1+2)</td><td>$(sah['sah1']+sah['sah2'])</td></tr>
+
+<tr>
+<td colspan='5' class='left' style="padding:0;">
+<h3 >IV. DATA PEMILIH DISABILITAS/PENYANDANG CACAT (TIDAK BERPENGARUH PADA PENCATATAN DATA DIATAS)</h3>
+</td>
+</tr>
+<TR>
+	<td class='no'>NO.</td><td class="left">URAIAN</td><td class="center">LAKI-LAKI</td><td class="center">PEREMPUAN</td><td class="center" style="width:80px;">JUMLAH</td>
+</TR>
+<TR><td class='no'>1.</td><TD class='uraian'>Jumlah Pemilih disabilitas/penyandang cacat</TD><td>$disablelk['disablelk1']</td><td>$disablepr['disablepr1']</td><td >$(disablelk['disablelk1']+disablepr['disablepr1'])</td>
+<TR><td class='no'>2.</td><TD class='uraian'>Jumlah Pemilih disabilitas/penyandang cacat yang menggunakan hak pilih</TD><td>$disablelk['disablelk2']</td><td>$disablepr['disablepr2']</td><td >$(disablepr['disablepr2']+disablelk['disablelk2'])</td>
+<tr>
+
+</table>
+<BR/><BR/>
+</div>
