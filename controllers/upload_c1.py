@@ -1,30 +1,46 @@
 import time,datetime,string,random
 import web,StringIO
 from PIL import Image
-
-class upload_c1:
+from core.model import model
+class upload_c1(model):
+	m = model()
+	def __init__(self):
+		model.__init__(self)
 	
 	def index(self,data):
-		web.header('Access-Control-Allow-Origin',      '*')
-		web.header('Access-Control-Allow-Credentials', 'true')
+		domain = web.ctx.env['HTTP_ORIGIN']
 		
-		return "OK!"
+		if not domain=="http://www.radiaranai.com" and\
+		 not domain=="http://radiaranai.com":
+			return web.notfound()
+		self.upload(data)
 	
-	def upload(self,data=None):
-		if not data and not 'file' in data \
-		and not 'nomor' in data: return web.notfound();
-		
-		
-		filedir = './upload'
-		filename= self.get_filename()			
-		
-		buff = StringIO.StringIO()
-		buff.write(data['file'])
-		buff.seek(0)
-		im = Image.open(buff)
-		
-		im.save(filedir+"/"+filename,'JPEG')
-		
+	def upload(self,data):
+		try:
+			nomor = data['nomor']
+			
+			filedir = './upload'
+			filename= self.get_filename()
+			buff = StringIO.StringIO()
+			buff.write(data['c1_1'])
+			buff.seek(0)
+			im = Image.open(buff)
+			im.save(filedir+"/"+filename,'JPEG')
+			c1_1 = filename
+			
+			
+			filename= self.get_filename()
+			buff = StringIO.StringIO()
+			buff.write(data['c1_1'])
+			buff.seek(0)
+			im = Image.open(buff)
+			im.save(filedir+"/"+filename,'JPEG')
+			c1_2 = filename
+			
+			sql = "update qc_daftar_nomor set c1_1=%s, c1_2=%s where nomor=%s"
+			self.query(sql,(c1_1,c1_2,nomor))
+		except:
+			return web.notfound()
 	def get_filename(self,N=15):
 		st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H_%M_%S')
 		s =  ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(N))
