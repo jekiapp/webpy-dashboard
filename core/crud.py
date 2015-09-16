@@ -4,6 +4,7 @@ from library.globals import hilang_titik,encode_date,redirect,dict_val,base_url,
 from datetime import date
 import web,traceback,sys
 from MySQLdb import IntegrityError
+from cgi import escape
 
 class crud(controller):
 	decimalpoint = '%.0f' #tanpa desimal
@@ -125,14 +126,14 @@ class crud(controller):
 		self.action = "Tambah"
 		
 		if data and 'simpan' in data:
-			self.insert(data,self.transaksi)
+			self.insert(self.fields[:],data,self.transaksi)
 		
 		cont = self.form(self.fields)
 		self.content += cont
 		return self.render(self.view,self.param)
 	
-	def insert(self,data,snb=True):
-		valid_value,error = self.validate(data)
+	def insert(self,fields,data,snb=True):
+		valid_value,error = self.validate(fields,data)
 		
 		if error:
 			cont = ""
@@ -153,10 +154,10 @@ class crud(controller):
 				error = self.get_error(self.colName(col[1:-1])+" : "+val[1:-1]+" sudah ada")
 				self.content += error
 	
-	def validate(self,data):
+	def validate(self,fields,data):
 		error = []
 		new_val = {}
-		for field in self.fields:
+		for field in fields:
 			tipe = field['type']
 			
 			val = data[field['field']]
@@ -184,19 +185,20 @@ class crud(controller):
 		self.action = "Edit"
 		
 		if data and 'simpan' in data:
-			self.update(id,data)
-		else:
-			result = self.model.select_by_id(id)
-			if not result:
-				return web.notfound()
-			data = {field['field']:self.get_val(result[field['field']] ,field['type']) for field in self.fields }
-			
+			self.update(id,self.fields[:],data)
+	
+		result = self.model.select_by_id(id)
+		if not result:
+			return web.notfound()
+		data = {field['field']:self.get_val(result[field['field']] ,field['type']) for field in self.fields }
+		
 		cont = self.form(self.fields,data)
 		self.content += cont
 		return self.render(self.view,self.param)
 	
-	def update(self,id,data):
-		valid_value,error = self.validate(data)
+	def update(self,id,fields,data):
+		valid_value,error = self.validate(fields,data)
+		
 		if error:
 			cont = ""
 			for m in error:
@@ -204,7 +206,8 @@ class crud(controller):
 			
 			self.content += cont
 		else:
-			value = dict_val(self.fields,valid_value)
+			value = dict_val(fields,valid_value)
+			
 			try:
 				self.model.update(id,value)
 				self.content += self.get_sukses('Data Berhasil Disimpan')
@@ -212,8 +215,7 @@ class crud(controller):
 				col = e[1].split(" ")[-1]; val = e[1].split(" ")[2]
 				error = self.get_error(self.colName(col[1:-1])+" : "+val[1:-1]+" sudah ada")
 				self.content += error
-	
-	
+		
 	def delete(self,id):
 		if self.hak_akses !=2: return web.notfound()
 		return self.model.delete(id)
@@ -276,7 +278,9 @@ class crud(controller):
 	def get_cell(self,val,tipe):
 		if val is None:	return ""
 		
-		if tipe=="date":
+		if tipe=="text_area":
+			return "<p style='white-space:normal'>"+self.get_val(val,tipe)+"</p>"
+		elif tipe=="date":
 			return "<p style='text-align:center;'>"+self.get_val(val,tipe)+"</p>"
 		elif tipe=="numeric":
 			return "<p style='text-align:right;'>"+self.get_val(val,tipe)+"</p>"
@@ -310,7 +314,12 @@ class crud(controller):
 			"<fieldset>"
 		for field in fields:
 			tipe = field['type']
-			val = str(data[field['field']]) if data else ''
+			val = ''
+			if data:
+				val = str(data[field['field']])
+			elif 'default' in field:
+				val = field['default']
+			
 			func = getattr(self, "form_"+tipe)
 			c += func(field,val)
 		c += "<div class='pDiv'><input type='submit' name='simpan' value='Simpan' />"+\
@@ -326,23 +335,27 @@ class crud(controller):
 	
 	def form_text(self,field,val):
 		tipe = "medium" if not "text-type" in field else field['text-type']
+		attr = field['attr'] if 'attr' in field else ''
 		return "<div><div class='label'>"+self.colName(field)+self.get_required(field)+" :</div>"+\
-			"<div><input id='f_"+field['field']+"' name='"+field['field']+"' value='"+val+"' type='text' class='text-"+tipe+"' /></div></div>"
+			"<div><input id='f_"+field['field']+"' name='"+field['field']+"' value=\""+escape(val,True)+"\"  "+attr+"  type='text' class='text-"+tipe+"' /></div></div>"
 	
 	def form_currency(self,field,val):
+		attr = field['attr'] if 'attr' in field else ''
 		return "<div><div class='label'>"+self.colName(field)+self.get_required(field)+" :</div>"+\
-			"<div><input id='f_"+field['field']+"' value='"+val+"'  name='"+field['field']+"' type='text' class='text-medium' "+\
+			"<div><input id='f_"+field['field']+"' value=\""+escape(val,True)+"\"  "+attr+"   name='"+field['field']+"' type='text' class='text-medium' "+\
 			"style='text-align:right; font-weight:bolder; color:red;' "+\
 			"onfocus='fokus(this)' onblur='fokus_out(this)'/></div></div>"
 	
 	def form_text_area(self,field,val):
+		attr = field['attr'] if 'attr' in field else ''
 		return "<div><div class='label'>"+self.colName(field)+self.get_required(field)+" :</div>"+\
-			"<div><textarea id='f_"+field['field']+"'  name='"+field['field']+"' rows='1' cols='1'>"+val+"</textarea></div></div>"
+			"<div><textarea id='f_"+field['field']+"'  name='"+field['field']+"' "+attr+" rows='1' cols='1'>"+val+"</textarea></div></div>"
 	
 	def form_combo(self,field,selected_val):
 		value = field['value']
+		attr = field['attr'] if 'attr' in field else ''
 		c = "<div><div class='label'>"+self.colName(field)+self.get_required(field)+" :</div>"+\
-			"<div><select id='f_"+field['field']+"' name='"+field['field']+"' >"
+			"<div><select id='f_"+field['field']+"' name='"+field['field']+"'  "+attr+">"
 		for v in value:
 			key = val = v
 			if isinstance(v,dict):
@@ -350,14 +363,15 @@ class crud(controller):
 				val = v['val']
 			
 			selected = 'selected="y"' if selected_val==key else '' 
-			c += "<option value='"+key+"' "+selected+">"+val+"</option>"
+			c += "<option value=\""+escape(key,True)+"\" "+selected+">"+val+"</option>"
 		c +="</select></div></div>"
 		
 		return c
 	
 	def form_date(self,field,val):
+		attr = field['attr'] if 'attr' in field else ''
 		c = "<div><div class='label'>"+self.colName(field)+self.get_required(field)+" :</div>"+\
-			"<div><input id='f_"+field['field']+"'  value='"+val+"' name='"+field['field']+"' type='text' class='text-medium'  onblur='isDate(this)' maxlength='10' />"+\
+			"<div><input id='f_"+field['field']+"'  value=\""+escape(val,True)+"\"  "+attr+"  name='"+field['field']+"' type='text' class='text-medium'  onblur='isDate(this)' maxlength='10' />"+\
 			"<a id='f_"+field['field']+"_clear' style='font: 11px Arial, Helvetica, sans-serif;'>Clear</a> (dd/mm/yyyy)"+\
 			"</div></div>"
 		
@@ -372,8 +386,9 @@ class crud(controller):
 		return c
 		
 	def form_numeric(self,field,val):
+		attr = field['attr'] if 'attr' in field else ''
 		return "<div><div class='label'>"+self.colName(field)+self.get_required(field)+" :</div>"+\
-			"<div><input id='f_"+field['field']+"' value='"+val+"' name='"+field['field']+"' type='text' class='text-medium' "+\
+			"<div><input id='f_"+field['field']+"' value=\""+escape(val,True)+"\"  "+attr+"  name='"+field['field']+"' type='text' class='text-medium' "+\
 			"style='text-align:right; font-weight:bolder;' /></div></div>"
 	
 	def form_foto(self,field,val):
@@ -410,11 +425,4 @@ class crud(controller):
 				""" % {'label':self.colName(field)+self.get_required(field),'val':val,'name':name,\
 					'img_url':img_url(),'img':img,'rem':rem,'file':file,'img_url':self.image_url}	
 	
-	"""
-	def form_checkbox(self,field,val):
-		req = "<span style='color:red;'>*</span>" if 'required' in field else ""
-		checked = "checked='y'" if val==1 else "" 
-		return "<div ><div style='display:inline-block; width:auto;' class='label'>"+self.colName(field)+req+" :</div>"+\
-			"<div style='display:inline-block; margin-left:10px;'><input id='f_"+field['field']+"' value='1' name='"+field['field']+"' "+checked+" type='checkbox' "+\
-			"style='text-align:right; font-weight:bolder;' /></div></div>"
-	"""	
+	

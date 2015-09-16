@@ -1,0 +1,32 @@
+.btn_print{
+    	display:inline-block; 	
+	width:20px; height:20px; 
+	background: url("/static/images/print.png") no-repeat;
+	background-size: 100%;
+
+}
+.btn_blacklist{
+    	display:inline-block; 	
+	width:20px; height:20px; 
+	background: url("/static/images/cancel.png") no-repeat;
+	background-size: 100%;
+
+}
+.action{
+    max-width:120px !important;
+}
+
+
+.btn_aktif{
+    	display:inline-block; 	
+	width:20px; height:20px; 
+	background: url("/static/images/check.png") no-repeat;
+	background-size: 100%;
+
+}
+.blacklist{
+	background: grey;
+}
+.main table tr:hover td {
+  background: inherit !important;
+}

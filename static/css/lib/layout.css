@@ -13,7 +13,7 @@ body {
 
 #wrapper {
 	text-align: left;
-	min-width: 930px;
+	width: 1030px;
 	margin: 0 auto;
 	min-height:100%;
 	display: inline-block;
@@ -170,9 +170,9 @@ h2 a:hover { text-decoration: underline; }
 /* Content ---------------------------------------- */
 
 .main {
-	width: 700px;
+	width: 80%;
 	float: right;
-	padding: 0 19px 0 0;
+	padding: 0 10px;
 	display: inline-block;
 }
 
@@ -190,19 +190,21 @@ h3 {
 }
 .main .container{
 	overflow-x: scroll;
-	width: 700px;
+	width: 100%;
 }
 .main table {
 	border: 1px solid #ddd;
 	min-width:700px;
+	margin: 0 auto;
 }
 
 .main table tr td {
+	white-space: nowrap;
 	/* background: #f6f6f6; */
 	vertical-align: middle;
 	padding: 0px 20px;
 	height: 29px;
-	line-height: 29px;
+	line-height: 20px;
 	border: 1px solid #ddd;
 	min-width:100px;
 }
@@ -224,7 +226,7 @@ h3 {
 	background: #fbfbfb;
 }
 
-.main table tr:hover td { background: #D5E4FC; }
+.main table tr:hover td { background: #F0F6FF; }
 
 .main table .action {
 	text-align: center;

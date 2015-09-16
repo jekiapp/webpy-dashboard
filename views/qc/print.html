@@ -1,0 +1,66 @@
+$def with(surveyor,pemilih)
+<html >
+<head>
+<style>
+		body{
+			width: 210mm;
+			height: 297mm;
+	}
+	h2{
+		width: 100%;
+		text-align:center;
+	}
+	.surveyor{
+		position:relative;
+		display: table;
+		width: 100%;
+	}
+	.surveyor > div{
+		width: 50%;
+		white-space:nowrap;
+	}
+	.surveyor > div *{
+		display:inline-block;
+		padding: 5px;
+		font-size: 14pt;
+	}
+	table{
+		width: 100%;
+		border: solid 1px;
+		border-collapse: collapse;
+	}
+	table td{
+		padding: 5px;
+	}
+</style>
+</head>
+<body onclick="window.close();">
+<h2>Daftar Pemilih</h2>
+<div class='surveyor'>
+<div style='float: right;'><div style="vertical-align:top;">Alamat : </div><div style="white-space:normal;"> $surveyor['alamat']</div></div>
+<div><div>NIK Surveyor : </div><div> $surveyor['NIK']</div></div>
+<div><div>Nama Surveyor : </div><div> $surveyor['nama']</div></div>
+
+</div>
+<br/>
+<table border='1'>
+<tr>
+<th>No.</th><th>NIK</th><th>Nama</th><th>Alamat</th><th>Nomor HP</th>
+</tr>
+$ no=0
+$for p in pemilih:
+	$ no+=1
+	<tr>
+		<td>$no.</td>
+		<td>$p['NIK']</td>
+		<td>$p['nama']</td>
+		<td>$p['alamat']</td>
+		<td>$p['nomor_HP']</td>
+		
+	</tr>
+</table>
+<script>
+window.onload = function(){ window.print();}
+</script>
+</body>
+</html>

@@ -64,21 +64,24 @@ class dpt(crud):
 		return c
 
 from models.m_crud import m_crud
+
 class m_dpt(m_crud):
 	def __init__(self):
 		m_crud.__init__(self,"qc_dpt")
+
 	def get_suara(self):
-		sql = "select (select count(*) from (select a.NIK from qc_surveyor a join"\
+		sql = "select (select count(*) from (select a.NIK from qc_survey a join"\
 				" qc_dpt b on a.NIK=b.NIK group by a.NIK) c) as surveyed,"\
 				"(select count(*) from qc_dpt) as jml_dpt"
 		res = self.get_query(sql);
 		return res[0]['surveyed'],res[0]['jml_dpt']
+
 	def select(self,limit,page=1):
 		page -= 1
 		page *= limit
 		query = "select a.*,not isnull(b.NIK) as surveyed from qc_dpt a "\
-			"left join qc_surveyor b on a.NIK = b.NIK "\
-			" group by a.NIK order by a.id limit "+str(page)+","+str(limit)
+			"left join qc_survey b on a.NIK = b.NIK "\
+			" group by a.NIK order by a.id desc limit "+str(page)+","+str(limit)
 		
 		result = self.get_query(query)
 		query = "select count(*) as count from "+self.table_name
@@ -96,8 +99,9 @@ class m_dpt(m_crud):
 		page -= 1
 		page *= limit
 		query = "select a.*,not isnull(b.NIK) as surveyed from qc_dpt a "\
-			"left join qc_surveyor b on a.NIK = b.NIK "\
-			" where "+field+" like %s group by a.NIK limit "+str(page)+","+str(limit)
+			"left join qc_survey b on a.NIK = b.NIK  "\
+			" where "+field+" like %s group by a.NIK "\
+			" order by a.id desc limit "+str(page)+","+str(limit)
 		
 		result = self.get_query(query,(txt,))
 		query = "select count(*) as count from "+self.table_name\

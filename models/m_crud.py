@@ -9,19 +9,14 @@ class m_crud(model):
 	def select(self,limit,page=1,orderby=None):
 		page -= 1
 		page *= limit
-		orderby = "order by "+orderby if orderby else "order by id desc"
+		orderby = "order by "+orderby if orderby else "order by "+self.table_name+".id desc"
 		query = "select * from "+self.table_name+" "+orderby+" limit "+str(page)+","+str(limit)
 		result = self.get_query(query)
 		query = "select count(*) as count from "+self.table_name
 		count = self.get_query(query)
 		return result,count[0]['count']
 	
-	def select_by_id(self,id):
-		query = "select * from "+self.table_name+" where id=%s"
-		result = self.get_query(query,(id,))
-		return result[0] if len(result)>0 else False
-	
-	def search(self,cols,txt,limit,page=1,orderby=None):
+	def search(self,cols,txt,limit,page=1,orderby=None,join=''):
 		txt = "%%"+txt.replace(' ','%%')+"%%"
 		field = "concat("
 		for col in cols:
@@ -30,17 +25,21 @@ class m_crud(model):
 		field +=")"
 		
 		orderby = "order by "+orderby if orderby else  "order by id desc"
-		
 		page -= 1
 		page *= limit
-		query = "select * from "+self.table_name \
-			+" where "+field+" "+orderby+" like %s limit "+str(page)+","+str(limit)
+		query = "select * from "+self.table_name\
+			+" where "+field+" like %s "+orderby+" limit "+str(page)+","+str(limit)
 		
 		result = self.get_query(query,(txt,))
 		query = "select count(*) as count from "+self.table_name\
 			+" where "+field+" like %s"
 		count = self.get_query(query,(txt,))
 		return result,count[0]['count']
+	
+	def select_by_id(self,id):
+		query = "select * from "+self.table_name+" where id=%s"
+		result = self.get_query(query,(id,))
+		return result[0] if len(result)>0 else False
 	
 	def insert(self,value):
 		col,val = self.get_val(value)

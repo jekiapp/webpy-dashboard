@@ -12,11 +12,10 @@ class lap_surveyor(crud):
 		self.css.append("qc/qc");
 		self.model = m_lapsurveyor()
 		self.fields = [
+					{'field':'surveyor','type':'text','required':1},
 					{'field':'NIK','type':'text','search':1},
 					{'field':'nama','type':'text','required':1,'search':1},
 					{'field':'alamat','type':'text_area','search':1},
-					{'field':'nik_surveyor','type':'text','required':1,'search':1},
-					{'field':'nama_surveyor','type':'text','search':1}
 					]
 		
 
@@ -53,39 +52,37 @@ class m_lapsurveyor(m_crud):
 	def select(self,limit,page=1):
 		page -= 1
 		page *= limit
-		query = "select * from qc_surveyor a join "\
-			"(select NIK from qc_surveyor group by NIK having count(*)>1) b on a.NIK=b.NIK"\
+		query = "select a.*,concat(c.nama,' (',c.nik,')') as surveyor from qc_survey a "\
+			" join qc_surveyor c on a.surveyor=c.id "\
+			"join (select NIK from qc_survey group by NIK having count(*)>1) b on a.NIK=b.NIK"\
 			" order by a.NIK limit "+str(page)+","+str(limit)
 		result = self.get_query(query)
-		query = "select count(*) as count from qc_surveyor a join "\
+		query = "select count(*) as count from qc_survey a join "\
 			"(select NIK from qc_surveyor group by NIK having count(*)>1) b on a.NIK=b.NIK"
 		count = self.get_query(query)
 		return result,count[0]['count']
-	
-	def select_by_id(self,id):
-		query = "select * from "+self.table_name+" where id=%s"
-		result = self.get_query(query,(id,))
-		return result[0] if len(result)>0 else False
 	
 	def search(self,cols,txt,limit,page=1):
 		txt = "%%"+txt.replace(' ','%%')+"%%"
 		field = "concat("
 		for col in cols:
 			field += "coalesce(a.`"+col+"`,''),"
-		field = field[:-1]
+		field += "coalesce(c.`NIK`,''),"
+		field += "coalesce(c.`nama`,'')"
 		field +=")"
-		
 		
 		page -= 1
 		page *= limit
-		query = "select * from qc_surveyor a join "\
-			"(select NIK from qc_surveyor group by NIK having count(*)>1) b on a.NIK=b.NIK"\
+		query = "select a.*,concat(c.nama,' (',c.NIK,')') as surveyor from qc_survey a "\
+			" join qc_surveyor c on a.surveyor=c.id "\
+			"join (select NIK from qc_survey group by NIK having count(*)>1) b on a.NIK=b.NIK"\
 			"  where "+field+" like %s order by a.NIK "\
 			" limit "+str(page)+","+str(limit)
 		
 		result = self.get_query(query,(txt,))
-		query = "select count(*) as count from qc_surveyor a join "\
-			"(select NIK from qc_surveyor group by NIK having count(*)>1) b on a.NIK=b.NIK"\
+		query = "select count(*) as count from qc_survey a "\
+			" join qc_surveyor c on a.surveyor=c.id "\
+			" join (select NIK from qc_survey group by NIK having count(*)>1) b on a.NIK=b.NIK"\
 			"  where "+field+" like %s "
 		count = self.get_query(query,(txt,))
 		return result,count[0]['count']
