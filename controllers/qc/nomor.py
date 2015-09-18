@@ -28,6 +28,7 @@ class nomor(crud):
 			c += "<th class='add'><a href='"+self.base_url()+"add/'></a></th>"
 		
 		for field in fields:
+			if field['field']=='c1_1' or field['field']=='c1_2': continue
 			c += "<th>"+self.colName(field)+"</th>"
 		c+="<th>SMS</th>"\
 			"<th>C1 Model 1</th>"\
