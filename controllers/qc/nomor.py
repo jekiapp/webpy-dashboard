@@ -9,13 +9,19 @@ class nomor(crud):
 	def __init__(self):
 		crud.__init__(self)
 		self.model = m_nomor()
-		self.fields = (
+		self.fields = [
 					{'field':'nama','type':'text','required':1,'search':1},
 					{'field':'nomor','type':'text','required':1,'search':1},
 					{'field':'keterangan','type':'text_area','search':1},
 					{'field':'foto','type':'foto'}
-					)
+					]
 		self.model.set_table(self.table_name)
+	
+	def p(self,*p):
+		self.fields.append({'field':'c1_1','type':'text'})
+		self.fields.append({'field':'c1_2','type':'text'})
+		return crud.p(self,*p)
+	
 	def get_list(self,fields,data,write=True):
 		c = ""
 		if write:
@@ -23,7 +29,9 @@ class nomor(crud):
 		
 		for field in fields:
 			c += "<th>"+self.colName(field)+"</th>"
-		c+="<th>SMS</th>"
+		c+="<th>SMS</th>"\
+			"<th>C1 Model 1</th>"\
+			"<th>C1 Model 2</th>"
 		if not data:
 			return c+"<tr><td style='font-weight:bolder; text-align:center; background:#D5E4FC;'  colspan='"\
 				+str(len(fields)+1)+"'>Data Kosong</td></tr>"
@@ -37,9 +45,13 @@ class nomor(crud):
 					"<a title='Hapus' href='javascript:void(0)' onclick='del(this,%(id)s)' class='delete'></a></td>"\
 					 % {'id':id}
 			for field in fields:
+				if field['field']=='c1_1' or field['field']=='c1_2': continue
 				c += "<td>"+self.get_cell(rw[field['field']],field['type'])+"</td>"
 			sms  = self.model.get_sms(rw['nomor'])
 			c += "<td style='min-width: 250px; white-space:normal;'>"+sms+"</td>"
+			
+			c += "<td><a href='/image/f/"+rw['c1_1']+"' target='_blank'>Sudah Ada</a></td>" if rw['c1_1'] else "<td></td>"  
+			c += "<td><a href='/image/f/"+rw['c1_2']+"' target='_blank'>Sudah Ada</a></td>" if rw['c1_2'] else "<td></td>"
 			
 			c += "</tr>"
 		return c
