@@ -1,4 +1,4 @@
-$def with(css,js,title,content,active_menu,active_sub,menu,sub_menu,username,action=None)
+$def with(css,js,title,content,active_menu,active_sub,menu,sub_menu,username,base_url=None,action=None)
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -27,6 +27,11 @@ $for style in css:
 $for script in js:
 	<script type="text/javascript" src="/static/js/$(script).js"></script>
 
+<script>
+
+var base_url = "$:base_url";
+
+</script>
 </head>
 
 <body>

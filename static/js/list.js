@@ -12,7 +12,7 @@ function search(url){
 
 function del(obj,id){
 	notif("apakah yakin menghapus data ini?",function(){
-		$.get("delete/"+id,function(resp){
+		$.get(base_url+"delete/"+id,function(resp){
 			console.log(resp);
 			closeNotif();
 			location.reload()

@@ -51,6 +51,7 @@ class controller():
 			content=content,
 			menu=self.menu,
 			sub_menu = self.sub_menu,
+			base_url = self.base_url(),
 			username=self.username
 		)
 	
