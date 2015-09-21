@@ -20,26 +20,41 @@ class upload_c1(model):
 			nomor = data['nomor']
 
 			filedir = './upload'
-			filename= self.get_filename()
-			buff = StringIO.StringIO()
-			buff.write(data['c1_1'])
-			buff.seek(0)
-			im = Image.open(buff)
-			im.save(filedir+"/"+filename,'JPEG')
-			c1_1 = filename
+			pesan = ""
+			if data['c1_1']:
+				filename= self.get_filename()
+				buff = StringIO.StringIO()
+				buff.write(data['c1_1'])
+				buff.seek(0)
+				im = Image.open(buff)
+				im.save(filedir+"/"+filename,'JPEG')	
+				sql = "update qc_daftar_nomor set c1_1=%s where nomor=%s"
+				self.query(sql,(filename,nomor))
+				pesan += "C1 "
 		
-		
-			filename= self.get_filename()
-			buff = StringIO.StringIO()
-			buff.write(data['c1_2'])
-			buff.seek(0)
-			im = Image.open(buff)
-			im.save(filedir+"/"+filename,'JPEG')
-			c1_2 = filename
-		
-			sql = "update qc_daftar_nomor set c1_1=%s, c1_2=%s where nomor=%s"
-			self.query(sql,(c1_1,c1_2,nomor))
-			return "<html><body><h3>Upload C1 Model 1 dan 2 berhasil!! </h3><br/>Klik untuk <a href='http://www.radiaranai.com'>[kembali]</a></body></html>"
+			if data['c1_2']:
+				filename= self.get_filename()
+				buff = StringIO.StringIO()
+				buff.write(data['c1_2'])
+				buff.seek(0)
+				im = Image.open(buff)
+				im.save(filedir+"/"+filename,'JPEG')
+				sql = "update qc_daftar_nomor set c1_2=%s where nomor=%s"
+				self.query(sql,(filename,nomor))
+				pesan += "Plano "
+			
+			if data['c1_3']:
+				filename= self.get_filename()
+				buff = StringIO.StringIO()
+				buff.write(data['c1_3'])
+				buff.seek(0)
+				im = Image.open(buff)
+				im.save(filedir+"/"+filename,'JPEG')
+				sql = "update qc_daftar_nomor set c1_3=%s where nomor=%s"
+				self.query(sql,(filename,nomor))
+				pesan += "Daftar Hadir "
+			
+			return "<html><body><h3>Upload "+pesan+" berhasil!! </h3><br/>Klik untuk <a href='http://www.radiaranai.com'>[kembali]</a></body></html>"
 		except Exception as e:	return str(e)
 	def get_filename(self,N=15):
 		st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H_%M_%S')
