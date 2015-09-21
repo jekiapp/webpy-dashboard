@@ -15,9 +15,9 @@ class upload_c1(model):
 		 not domain=="http://www.skhatiku.com" and\
 		 not domain=="http://skhatiku.com":
 			return web.notfound()
-		return self.upload(data)
+		return self.upload(domain,data)
 	
-	def upload(self,data):
+	def upload(self,domain,data):
 		try:
 			nomor = data['nomor']
 
@@ -56,7 +56,7 @@ class upload_c1(model):
 				self.query(sql,(filename,nomor))
 				pesan += "Daftar Hadir "
 			
-			return "<html><body><h3>Upload "+pesan+" berhasil!! </h3><br/>Klik untuk <a href='http://www.radiaranai.com'>[kembali]</a></body></html>"
+			return "<html><body><h3>Upload "+pesan+" berhasil!! </h3><br/>Klik untuk <a href='"+domain+"'>[kembali]</a></body></html>"
 		except Exception as e:	return str(e)
 	def get_filename(self,N=15):
 		st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H_%M_%S')

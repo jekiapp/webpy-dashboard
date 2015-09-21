@@ -28,11 +28,15 @@ class nomor(crud):
 			c += "<th class='add'><a href='"+self.base_url()+"add/'></a></th>"
 		
 		for field in fields:
-			if field['field']=='c1_1' or field['field']=='c1_2': continue
+			kol = field['field']
+			if kol=='c1_1' or kol=='c1_2' or kol=='c1_3': continue
 			c += "<th>"+self.colName(field)+"</th>"
+		
 		c+="<th>SMS</th>"\
-			"<th>C1 Model 1</th>"\
-			"<th>C1 Model 2</th>"
+			"<th>C1</th>"\
+			"<th>Plano</th>"\
+			"<th>Daftar Hadir</th>"
+		
 		if not data:
 			return c+"<tr><td style='font-weight:bolder; text-align:center; background:#D5E4FC;'  colspan='"\
 				+str(len(fields)+1)+"'>Data Kosong</td></tr>"
@@ -53,6 +57,7 @@ class nomor(crud):
 			
 			c += "<td><a href='/image/f/"+rw['c1_1']+"' target='_blank'>Sudah Ada</a></td>" if rw['c1_1'] else "<td></td>"  
 			c += "<td><a href='/image/f/"+rw['c1_2']+"' target='_blank'>Sudah Ada</a></td>" if rw['c1_2'] else "<td></td>"
+			c += "<td><a href='/image/f/"+rw['c1_3']+"' target='_blank'>Sudah Ada</a></td>" if rw['c1_3'] else "<td></td>"
 			
 			c += "</tr>"
 		return c
