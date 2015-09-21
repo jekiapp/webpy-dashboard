@@ -11,7 +11,9 @@ class upload_c1(model):
 		domain = web.ctx.env['HTTP_ORIGIN']
 		
 		if not domain=="http://www.radiaranai.com" and\
-		 not domain=="http://radiaranai.com":
+		 not domain=="http://radiaranai.com" and\
+		 not domain=="http://www.skhatiku.com" and\
+		 not domain=="http://skhatiku.com":
 			return web.notfound()
 		return self.upload(data)
 	
