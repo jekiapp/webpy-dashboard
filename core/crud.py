@@ -8,7 +8,7 @@ from cgi import escape
 
 class crud(controller):
 	decimalpoint = '%.0f' #tanpa desimal
-	limit = 25
+	limit = 30
 	transaksi = False
 	tanggal = None
 	

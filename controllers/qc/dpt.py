@@ -14,8 +14,7 @@ class dpt(crud):
 		self.fields = [
 					{'field':'NIK','type':'text','required':1,'search':1},
 					{'field':'nama','type':'text','required':1,'search':1},
-					{'field':'alamat','type':'text_area','search':1},
-					{'field':'jenis_kelamin','type':'combo','rule':'required','value':jenis_kelamin}
+					{'field':'alamat','type':'text_area','search':1}
 					]
 		
 	
