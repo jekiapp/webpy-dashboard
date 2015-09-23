@@ -1,6 +1,6 @@
 from controller import controller
 from models.m_crud import m_crud,m_transaksi
-from library.globals import hilang_titik,encode_date,redirect,dict_val,base_url,img_url
+from library.globals import hilang_titik,encode_date,redirect,dict_val,img_url
 from datetime import date
 import web,traceback,sys
 from MySQLdb import IntegrityError
@@ -14,7 +14,7 @@ class crud(controller):
 	
 	def __init__(self,table_name="",transaksi=False):
 		self.transaksi = transaksi
-		setattr(self,'base_url',base_url)
+		
 		self.CN = self.active_sub = self.__class__.__name__ 
 		if not hasattr(web.config._session,self.CN): setattr(web.config._session,self.CN,{})
 		
@@ -59,7 +59,7 @@ class crud(controller):
 			if web.config.debug:
 				return traceback.format_exception(*sys.exc_info())
 			else:
-				return web.notfound()#raise web.seeother(base_url())
+				return web.notfound()#raise web.seeother(self.base_url())
 
 	def search(self,cari=None,p=None,page=1):
 		try:
@@ -82,7 +82,7 @@ class crud(controller):
 		except Exception as e: 
 			#return e
 			del getattr(web.config._session,self.CN)['page']
-			raise web.seeother(base_url())
+			raise web.seeother(self.base_url())
 	
 	def nav(self,data):
 		try:
@@ -104,7 +104,7 @@ class crud(controller):
 			getattr(web.config._session,self.CN)['tahun'] = tahun
 		finally: 
 			del getattr(web.config._session,self.CN)['page']
-			raise web.seeother(base_url())
+			raise web.seeother(self.base_url())
 	
 	def list(self,row,count,page,search=None):
 		if self.view=="index": self.view = "crud_list" 
@@ -148,7 +148,7 @@ class crud(controller):
 				self.model.insert(value)
 				self.content += self.get_sukses('Data Berhasil Disimpan')
 				
-				if snb: raise redirect(base_url())
+				if snb: raise redirect(self.base_url())
 			except IntegrityError as e:
 				col = e[1].split(" ")[-1]; val = e[1].split(" ")[2]
 				error = self.get_error(self.colName(col[1:-1])+" : "+val[1:-1]+" sudah ada")

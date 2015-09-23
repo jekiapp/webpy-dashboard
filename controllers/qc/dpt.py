@@ -1,5 +1,4 @@
 from core.crud import crud
-from library.globals import base_url
 
 class dpt(crud):
 	active_menu = "qc"
@@ -10,7 +9,6 @@ class dpt(crud):
 		crud.__init__(self)
 		self.model = m_dpt()
 		self.css.append("qc/qc");
-		jenis_kelamin = ['Laki-laki',"Perempuan"]
 		self.fields = [
 					{'field':'NIK','type':'text','required':1,'search':1},
 					{'field':'nama','type':'text','required':1,'search':1},
@@ -39,7 +37,7 @@ class dpt(crud):
 	def get_list(self,fields,data,write=True):
 		c = ""
 		if write:
-			c += "<th class='add'><a href='"+base_url()+"add/'></a></th>"
+			c += "<th class='add'><a href='"+self.base_url()+"add/'></a></th>"
 		
 		for field in fields:
 			c += "<th>"+self.colName(field)+"</th>"
@@ -53,7 +51,7 @@ class dpt(crud):
 			className = "class='surveyed'" if rw['surveyed']==1 else "" 
 			c += "<tr "+className+" id='"+id+"'>"
 			if write:
-				c += "<td class='action'><a title='Edit' href='"+base_url()+"edit/%(id)s/' class='edit'></a>"\
+				c += "<td class='action'><a title='Edit' href='"+self.base_url()+"edit/%(id)s/' class='edit'></a>"\
 					"<a title='Hapus' href='javascript:void(0)' onclick='del(this,%(id)s)' class='delete'></a></td>"\
 					 % {'id':id}
 			for field in fields:
