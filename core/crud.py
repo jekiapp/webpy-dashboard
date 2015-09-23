@@ -81,7 +81,7 @@ class crud(controller):
 			
 			return self.list(result,count,page,cari)
 		except Exception as e: 
-			#return e
+			#return e pritikiw
 			try: del getattr(web.config._session,self.CN)['page']
 			except: pass
 			return web.seeother(self.base_url())
