@@ -55,7 +55,8 @@ class crud(controller):
 			
 			return self.list(result,count,page)
 		except: 
-			del getattr(web.config._session,self.CN)['page']
+			try: del getattr(web.config._session,self.CN)['page']
+			except: pass
 			if web.config.debug:
 				return traceback.format_exception(*sys.exc_info())
 			else:
@@ -81,7 +82,8 @@ class crud(controller):
 			return self.list(result,count,page,cari)
 		except Exception as e: 
 			#return e
-			del getattr(web.config._session,self.CN)['page']
+			try: del getattr(web.config._session,self.CN)['page']
+			except: pass
 			raise web.seeother(self.base_url())
 	
 	def nav(self,data):
@@ -103,7 +105,8 @@ class crud(controller):
 			getattr(web.config._session,self.CN)['bulan'] = bulan
 			getattr(web.config._session,self.CN)['tahun'] = tahun
 		finally: 
-			del getattr(web.config._session,self.CN)['page']
+			try: del getattr(web.config._session,self.CN)['page']
+			except: pass
 			raise web.seeother(self.base_url())
 	
 	def list(self,row,count,page,search=None):
