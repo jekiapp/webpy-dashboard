@@ -84,7 +84,7 @@ class crud(controller):
 			#return e
 			try: del getattr(web.config._session,self.CN)['page']
 			except: pass
-			raise web.seeother(self.base_url())
+			return web.seeother(self.base_url())
 	
 	def nav(self,data):
 		try:
