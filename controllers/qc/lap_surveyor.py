@@ -1,5 +1,5 @@
 from core.crud import crud
-from models.m_crud import m_crud
+from models.mo_crud import mo_crud
 from library.globals import base_url
 
 class lap_surveyor(crud):
@@ -17,8 +17,7 @@ class lap_surveyor(crud):
 					{'field':'nama','type':'text','required':1,'search':1},
 					{'field':'alamat','type':'text_area','search':1},
 					]
-		
-
+	
 	def get_list(self,fields,data,write=True):
 		c = ""
 		for field in fields:
@@ -30,7 +29,7 @@ class lap_surveyor(crud):
 		nik = ""
 		group = 1
 		for i,rw in enumerate(data):
-			id = str(rw['id'])
+			id = str(rw['_id'])
 			
 			if nik!=rw['NIK']:
 				nik = rw['NIK']
@@ -44,46 +43,83 @@ class lap_surveyor(crud):
 			c += "</tr>"
 		return c
 
-class m_lapsurveyor(m_crud):
+class m_lapsurveyor(mo_crud):
 	def __init__(self):
-		m_crud.__init__(self,"qc_surveyor");
+		mo_crud.__init__(self,"surveyor",embed='survey');
 	
+	def insert(self,*p):
+		return
+	def update(self,*p):
+		return
 	
 	def select(self,limit,page=1):
 		page -= 1
 		page *= limit
-		query = "select a.*,concat(c.nama,' (',c.nik,')') as surveyor from qc_survey a "\
-			" join qc_surveyor c on a.surveyor=c.id "\
-			"join (select NIK from qc_survey group by NIK having count(*)>1) b on a.NIK=b.NIK"\
-			" order by a.NIK limit "+str(page)+","+str(limit)
-		result = self.get_query(query)
-		query = "select count(*) as count from qc_survey a join "\
-			"(select NIK from qc_surveyor group by NIK having count(*)>1) b on a.NIK=b.NIK"
-		count = self.get_query(query)
-		return result,count[0]['count']
+		
+		result = self.cl.aggregate([
+					{'$unwind':'$survey'},
+					{'$group':{
+						'_id':'$survey.NIK',					
+						'fields':{'$push':{'_id':'$survey._id','snama':'$nama','sNIK':'$NIK'
+							,'NIK':'$survey.NIK','nama':'$survey.nama',
+							'alamat':'$survey.alamat'
+							}},
+						'count':{'$sum':1}
+					}},
+					{'$match':{'count':{'$gt':1}}},
+					{'$unwind':'$fields'},
+					{'$skip':page},
+					{'$limit':limit}
+				])
+		result = [x['fields'] for x in result]
+		result = [dict(x,surveyor=x['snama']+' ('+x['sNIK']+')') for x in result]
+		count = list(self.cl.aggregate([
+					{'$unwind':'$survey'},
+					{'$group':{
+						'_id':'$survey.NIK',
+						'fields':{'$push':{'nama':'$nama'}},		
+						'count':{'$sum':1}
+					}},
+					{'$match':{'count':{'$gt':1}}},
+					{'$unwind':'$fields'},
+					{'$group':{'_id':None,'count':{'$sum':1}}}
+				]))
+		c = count[0]['count'] if count else 0 
+		return result,c
 	
-	def search(self,cols,txt,limit,page=1):
-		txt = "%%"+txt.replace(' ','%%')+"%%"
-		field = "concat("
-		for col in cols:
-			field += "coalesce(a.`"+col+"`,''),"
-		field += "coalesce(c.`NIK`,''),"
-		field += "coalesce(c.`nama`,'')"
-		field +=")"
+	def search_embed(self,cols,txt,limit,page):
 		
-		page -= 1
-		page *= limit
-		query = "select a.*,concat(c.nama,' (',c.NIK,')') as surveyor from qc_survey a "\
-			" join qc_surveyor c on a.surveyor=c.id "\
-			"join (select NIK from qc_survey group by NIK having count(*)>1) b on a.NIK=b.NIK"\
-			"  where "+field+" like %s order by a.NIK "\
-			" limit "+str(page)+","+str(limit)
-		
-		result = self.get_query(query,(txt,))
-		query = "select count(*) as count from qc_survey a "\
-			" join qc_surveyor c on a.surveyor=c.id "\
-			" join (select NIK from qc_survey group by NIK having count(*)>1) b on a.NIK=b.NIK"\
-			"  where "+field+" like %s "
-		count = self.get_query(query,(txt,))
-		return result,count[0]['count']
+		result = self.cl.aggregate([
+					{'$unwind':'$survey'},
+					{'$group':{
+						'_id':'$survey.NIK',					
+						'fields':{'$push':{'_id':'$survey._id','snama':'$nama','sNIK':'$NIK'
+							,'NIK':'$survey.NIK','nama':'$survey.nama',
+							'alamat':'$survey.alamat'
+							}},
+						'count':{'$sum':1}
+					}},
+					{'$match':{'count':{'$gt':1}}},
+					{'$unwind':'$fields'},
+					{'$match':{'$or':[{'fields.snama':{'$regex':txt,'$options':'i'}},{'fields.sNIK':txt}]}},
+					{'$skip':page},
+					{'$limit':limit}
+				])
+		result = [x['fields'] for x in result]
+		result = [dict(x,surveyor=x['snama']+' ('+x['sNIK']+')') for x in result]
+		count = list(self.cl.aggregate([
+					{'$unwind':'$survey'},
+					{'$group':{
+						'_id':'$survey.NIK',
+						'fields':{'$push':{'snama':'$nama','sNIK':'$NIK'}},		
+						'count':{'$sum':1}
+					}},
+					{'$match':{'count':{'$gt':1}}},
+					{'$unwind':'$fields'},
+					{'$match':{'$or':[{'fields.snama':{'$regex':txt,'$options':'i'}},{'fields.sNIK':txt}]}},
+					{'$group':{'_id':None,'count':{'$sum':1}}}
+				]))
+		c = count[0]['count'] if count else 0 
+		return result,c
+	
 	

@@ -6,15 +6,17 @@ class survey(crud):
 	title = "Survey Pemilih"
 	def __init__(self):
 		crud.__init__(self)
-		self.model = m_surveyor()
+		self.structure = {'NIK':'','nama':'','alamat':'','nomor_HP':''}
+		self.model = m_surveyor(self.structure)
 		self.fields = [
-					{'field':'surveyor','type':'text_area','required':1},
+					{'field':'surveyor','type':'text_area','required':1,'parent':1},
 					{'field':'NIK','type':'text','required':1,'search':1},
 					{'field':'nama','type':'text','search':1},
 					{'field':'alamat','type':'text_area'},
 					{'field':'nomor_HP','type':'text'},
 					]
-	
+		
+		
 	def add(self,data=None):
 		surveyor = self.model.get_surveyor()
 		surveyor = [{"key":str(x['id']),"val":x["surveyor"]} for x in surveyor]
@@ -55,65 +57,85 @@ class survey(crud):
 		fields.pop(0);fields.pop(0)
 		crud.update(self,id,fields,data)
 
-from models.m_crud import m_crud
+from models.mo_crud import mo_crud
 
-class m_surveyor(m_crud):
-	def __init__(self):
-		m_crud.__init__(self,"qc_survey")
+class m_surveyor(mo_crud):
+	def __init__(self,structure):
+		mo_crud.__init__(self,"surveyor",structure,'survey','surveyor')
+	
+	def select_by_id(self,id):
+		result = mo_crud.select_by_id(self,id)
+		result['surveyor'] = result['parent']['_id']
+		return result
 	
 	def insert(self,value):
-		res = m_crud.insert(self,value)
-		
 		nik = value['NIK']
-		sql = "select NIK from qc_survey where NIK=%s"
-		res = self.get_query(sql,(nik,))
-		if len(res)>1:
+		c = self.cl.find({self.embed+'.NIK':nik}).count()
+		
+		result = mo_crud.insert(self,value)
+		
+		if c>0:
 			raise SurveyException('Warning : NIK '+nik+' sudah pernah terdaftar');
 		
-		sql = "select NIK from qc_dpt where NIK=%s"
-		res = self.get_query(sql,(nik,))
-		if len(res)>0:
+		c = self.db.dpt.find({'NIK':nik}).count()
+		if c>0:
 			raise DPTException('NIK : '+nik+' terdaftar pada DPT');
-		return res
+		return result
 	
 	def get_surveyor(self):
-		sql = "select id,concat(nama,' (',NIK,')') as surveyor from qc_surveyor where not blacklist"
-		return self.get_query(sql)
-
-	def select(self,limit,page=1):
-		page -= 1
-		page *= limit
-		
-		query = "select a.*,concat(b.nama,' (',b.nik,')') as surveyor from "+self.table_name\
-		+" a join qc_surveyor b on a.surveyor=b.id "\
-		"order by b.id desc,a.id desc limit "+str(page)+","+str(limit)
-		result = self.get_query(query)
-		query = "select count(*) as count from "+self.table_name
-		count = self.get_query(query)
-		return result,count[0]['count']
+		result = self.cl.find({'blacklist':0},{'nama':1,'NIK':1})
+		res = []
+		for r in result:
+			res.append({'id':r['_id'],'surveyor':r['nama']+' ('+r['NIK']+')'})
+		return res
 	
-	def search(self,cols,txt,limit,page=1,orderby=None,join=''):
-		txt = "%%"+txt.replace(' ','%%')+"%%"
-		field = "concat("
-		for col in cols:
-			field += "coalesce(a.`"+col+"`,''),"
-		field += "coalesce(b.`NIK`,''),"
-		field += "coalesce(b.`nama`,'')"
-		#field = field[:-1]
-		field +=")"
+	def select(self,*p):
+		result,count = mo_crud.select(self,*p)
+		i = -1
+		for r in result:
+			i+=1
+			result[i]['surveyor'] = r['parent']['nama']+" ("+r['parent']['NIK']+")"
+		return result,count
+	
+	def search_embed(self,cols,txt,limit,page=1):
+		search=['$nama','$NIK']
+		for c in cols:
+			search.append('$'+self.embed+'.'+c)
+			search.append(' ')
 		
-		orderby = "order by "+orderby if orderby else  "order by id desc"
-		page -= 1
-		page *= limit
-		query = "select a.*,concat(b.nama,' (',b.nik,')') as surveyor from "\
-			+self.table_name+" a join qc_surveyor b on a.surveyor=b.id "\
-			+" where "+field+" like %s "+orderby+" limit "+str(page)+","+str(limit)
+		result = self.cl.aggregate([
+			{'$unwind':'$survey'},
+			{'$project':{
+				'_id':1,
+				'survey._id':1,
+				'fields':'$$ROOT',
+				'surveyor':{'$concat':['$nama',' (','$NIK',')']},
+				'search':{'$concat':search}
+			}},
+			{'$match':{
+				'search':{'$regex':'.*'+txt+'.*','$options':'i'}
+			}},
+			{'$sort':self.SON([('_id',-1),(self.embed+'._id',-1)])},
+			{'$skip':page},								
+			{'$limit':limit},
+			
+		])
 		
-		result = self.get_query(query,(txt,))
-		query = "select count(*) as count from "+self.table_name\
-			+" a join qc_surveyor b on a.surveyor=b.id where "+field+" like %s"
-		count = self.get_query(query,(txt,))
-		return result,count[0]['count']
+		count = list(self.cl.aggregate([
+			{'$unwind':'$survey'},
+			{'$project':{
+				'search':{'$concat':search}
+			}},
+			{'$match':{
+				'search':{'$regex':'.*'+txt+'.*','$options':'i'}
+			}},
+			{'$group':{'_id':None,'count':{'$sum':1}}}
+		]))
+		
+		c = 0 if not len(count) else count[0]['count']
+		result = [dict(x['fields'],surveyor=x['surveyor']) for x in result]
+		result = [dict(x[self.embed],surveyor=x['surveyor']) for x in result]
+		return result,c
 	
 class SurveyException(Exception):
 	def __init__(self, message):

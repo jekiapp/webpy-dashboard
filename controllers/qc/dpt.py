@@ -7,7 +7,7 @@ class dpt(crud):
 	title = "Daftar Pemilih Tetap"
 	def __init__(self):
 		crud.__init__(self)
-		self.model = m_dpt()
+		
 		self.css.append("qc/qc");
 		self.fields = [
 					{'field':'NIK','type':'text','required':1,'search':1},
@@ -15,12 +15,15 @@ class dpt(crud):
 					{'field':'alamat','type':'text_area','search':1}
 					]
 		
+		self.model = mo_dpt({'NIK':'','nama':'','alamat':''})
 	
 	def list(self,row,count,page,search=None):
-		self.view = "qc/dpt_list" 
-		surveyed,jml_dpt = self.model.get_suara();
-		surveystr = "Suara Tersurvey "+str(surveyed)+\
-			" dari "+str(jml_dpt)+" ("+str(round(float(surveyed)/float(jml_dpt)*100,2))+")%" 
+		self.view = "qc/dpt_list"
+		surveystr = " " 
+		if not search:
+			surveyed,jml_dpt = self.model.get_suara();
+			surveystr = "Suara Tersurvey "+str(surveyed)+\
+				" dari "+str(jml_dpt)+" ("+str(round(float(surveyed)/float(jml_dpt)*100,2))+")%" 
 		self.param.update({"surveyed":surveystr});
 		
 		self.js.append("list")
@@ -47,12 +50,12 @@ class dpt(crud):
 				+str(len(fields)+1)+"'>Data Kosong</td></tr>"
 		
 		for i,rw in enumerate(data):
-			id = str(rw['id'])
+			id = str(rw['_id'])
 			className = "class='surveyed'" if rw['surveyed']==1 else "" 
 			c += "<tr "+className+" id='"+id+"'>"
 			if write:
 				c += "<td class='action'><a title='Edit' href='"+self.base_url()+"edit/%(id)s/' class='edit'></a>"\
-					"<a title='Hapus' href='javascript:void(0)' onclick='del(this,%(id)s)' class='delete'></a></td>"\
+					"<a title='Hapus' href='javascript:void(0)' onclick='del(this,\"%(id)s\")' class='delete'></a></td>"\
 					 % {'id':id}
 			for field in fields:
 				c += "<td>"+self.get_cell(rw[field['field']],field['type'])+"</td>"
@@ -60,51 +63,29 @@ class dpt(crud):
 			c += "</tr>"
 		return c
 
-from models.m_crud import m_crud
+from models.mo_crud import mo_crud
 
-class m_dpt(m_crud):
-	def __init__(self):
-		m_crud.__init__(self,"qc_dpt")
-
+class mo_dpt(mo_crud):
+	def __init__(self,structure):
+		mo_crud.__init__(self,"dpt",structure)
+	
 	def get_suara(self):
-		sql = "select (select count(*) from (select a.NIK from qc_survey a join"\
-				" qc_dpt b on a.NIK=b.NIK group by a.NIK) c) as surveyed,"\
-				"(select count(*) from qc_dpt) as jml_dpt"
-		res = self.get_query(sql);
-		return res[0]['surveyed'],res[0]['jml_dpt']
-
+		jml = self.db.surveyed.count()
+		return jml,self.count
+	
 	def select(self,limit,page=1):
-		page -= 1
-		page *= limit
-		query = "select a.*,not isnull(b.NIK) as surveyed from qc_dpt a "\
-			"left join qc_survey b on a.NIK = b.NIK "\
-			" group by a.NIK order by a.id desc limit "+str(page)+","+str(limit)
-		
-		result = self.get_query(query)
-		query = "select count(*) as count from "+self.table_name
-		count = self.get_query(query)
-		return result,count[0]['count']
+		result,count = mo_crud.select(self,limit,page)
+		for i,res in zip(range(len(result)),result):
+			s = self.db.surveyed.find_one({'NIK':res['NIK']})
+			res['surveyed'] = 1 if s else 0
+			result[i] = res
+		self.count = count
+		return result,count
 	
 	def search(self,cols,txt,limit,page=1):
-		txt = "%%"+txt.replace(' ','%%')+"%%"
-		field = "concat("
-		for col in cols:
-			field += "coalesce(a."+col+",''),"
-		field = field[:-1]
-		field +=")"
-		
-		page -= 1
-		page *= limit
-		query = "select a.*,not isnull(b.NIK) as surveyed from qc_dpt a "\
-			"left join qc_survey b on a.NIK = b.NIK  "\
-			" where "+field+" like %s group by a.NIK "\
-			" order by a.id desc limit "+str(page)+","+str(limit)
-		
-		result = self.get_query(query,(txt,))
-		query = "select count(*) as count from "+self.table_name\
-			+" a where "+field+" like %s"
-		
-		count = self.get_query(query,(txt,))
-		
-		return result,count[0]['count']
-	
+		result,count = mo_crud.search(self,cols,txt,limit,page)
+		for i,res in zip(range(len(result)),result):
+			s = self.db.surveyed.find_one({'NIK':res['NIK']})
+			res['surveyed'] = 1 if s else 0
+			result[i] = res
+		return result,count

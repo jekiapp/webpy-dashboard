@@ -5,6 +5,14 @@
 	background-size: 100%;
 
 }
+.export{
+    	display:inline-block; 	
+	width:20px; height:20px; 
+	background: url("/static/images/excel.png") no-repeat;
+	background-size: 100%;
+
+}
+
 .btn_blacklist{
     	display:inline-block; 	
 	width:20px; height:20px; 
@@ -13,7 +21,7 @@
 
 }
 .action{
-    max-width:120px !important;
+    max-width:140px !important;
 }
 
 

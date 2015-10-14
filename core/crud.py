@@ -4,11 +4,13 @@ from library.globals import hilang_titik,encode_date,redirect,dict_val,img_url
 from datetime import date
 import web,traceback,sys
 from MySQLdb import IntegrityError
+from pymongo.errors import DuplicateKeyError
 from cgi import escape
+
 
 class crud(controller):
 	decimalpoint = '%.0f' #tanpa desimal
-	limit = 30
+	limit = 25
 	transaksi = False
 	tanggal = None
 	
@@ -37,9 +39,12 @@ class crud(controller):
 		self.js.append("lib/apprise")
 	
 	def index(self,data=None):
-		page = 1 if 'page' not in getattr(web.config._session,self.CN) else getattr(web.config._session,self.CN)['page']
-		
+		page = 1
 		return self.p(page)
+	
+	def back(self):
+		bck_str = getattr(web.config._session,self.CN)['back']
+		web.seeother(self.base_url()+bck_str)
 	
 	def p(self,page=1):
 		try:
@@ -47,16 +52,16 @@ class crud(controller):
 				self.tanggal=(getattr(web.config._session,self.CN)['bulan'],\
 							getattr(web.config._session,self.CN)['tahun'])
 				self.model.set_tgl(*self.tanggal)
-			getattr(web.config._session,self.CN)['page'] = page
+			getattr(web.config._session,self.CN)['back'] = 'p/'+str(page)
 			
 			page = int(page)
 			if page==0: raise
 			result,count = self.model.select(self.limit,page)
-			
+			#return count
 			return self.list(result,count,page)
 		except: 
-			try: del getattr(web.config._session,self.CN)['page']
-			except: pass
+			del getattr(web.config._session,self.CN)['back']
+			
 			if web.config.debug:
 				return traceback.format_exception(*sys.exc_info())
 			else:
@@ -74,16 +79,15 @@ class crud(controller):
 				self.tanggal=(getattr(web.config._session,self.CN)['bulan'],\
 							getattr(web.config._session,self.CN)['tahun'])
 				self.model.set_tgl(*self.tanggal)
-			getattr(web.config._session,self.CN)['page'] = page
+			getattr(web.config._session,self.CN)['back'] = 'search/'+cari+'/p/'+str(page)
 			
 			page = int(page)
 			result,count = self.model.search(cols,cari,self.limit,page)
-			
+			#return result
 			return self.list(result,count,page,cari)
 		except Exception as e: 
-			#return e pritikiw
-			try: del getattr(web.config._session,self.CN)['page']
-			except: pass
+			#return str(traceback.format_exc())
+			del getattr(web.config._session,self.CN)['back']
 			return web.seeother(self.base_url())
 	
 	def nav(self,data):
@@ -155,7 +159,13 @@ class crud(controller):
 			except IntegrityError as e:
 				col = e[1].split(" ")[-1]; val = e[1].split(" ")[2]
 				error = self.get_error(self.colName(col[1:-1])+" : "+val[1:-1]+" sudah ada")
-				self.content += error
+				self.content += str(error)
+			except DuplicateKeyError as e:
+				import re
+				col = str(re.search('.*\$(.*)_',str(e)).group(1))
+				val = str(re.search('"(.*)"',str(e)).group(0))
+				error = self.get_error(col+" : "+val+" sudah ada")
+				self.content += str(error)
 	
 	def validate(self,fields,data):
 		error = []
@@ -218,7 +228,13 @@ class crud(controller):
 				col = e[1].split(" ")[-1]; val = e[1].split(" ")[2]
 				error = self.get_error(self.colName(col[1:-1])+" : "+val[1:-1]+" sudah ada")
 				self.content += error
-		
+			except DuplicateKeyError as e:
+				import re
+				col = re.search('.*\$(.*)_',str(e)).group(1)
+				val = re.search('"(.*)"',str(e)).group(0)
+				error = self.get_error(col+" : "+val+" sudah ada")
+				self.content += error
+	
 	def delete(self,id):
 		if self.hak_akses !=2: return web.notfound()
 		return self.model.delete(id)
@@ -238,12 +254,12 @@ class crud(controller):
 				+str(len(fields)+1)+"'>Data Kosong</td></tr>"
 		
 		for i,rw in enumerate(data):
-			id = str(rw['id'])
+			id = str(rw['id']) if 'id' in rw else str(rw['_id'])
 			className = "class='odd'" if (i+1)%2==0 else "" 
 			c += "<tr "+className+" id='"+id+"'>"
 			if write:
 				c += "<td class='action'><a title='Edit' href='"+self.base_url()+"edit/%(id)s/' class='edit'></a>"\
-					"<a title='Hapus' href='javascript:void(0)' onclick='del(this,%(id)s)' class='delete'></a></td>"\
+					"<a title='Hapus' href='javascript:void(0)' onclick='del(this,\"%(id)s\")' class='delete'></a></td>"\
 					 % {'id':id}
 			for field in fields:
 				c += "<td>"+self.get_cell(rw[field['field']],field['type'])+"</td>"
@@ -279,7 +295,7 @@ class crud(controller):
 		return str(val)
 	
 	def get_cell(self,val,tipe):
-		if val is None:	return ""
+		if not val:	return ""
 		
 		if tipe=="text_area":
 			return "<p style='white-space:normal'>"+self.get_val(val,tipe)+"</p>"
