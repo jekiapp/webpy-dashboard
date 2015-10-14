@@ -133,7 +133,7 @@ class m_surveyor(mo_crud):
 			i+=1
 			sur = self.cl.find_one({'_id':self.Id(r['_id'])},{'survey._id':1})
 			jml = len(sur['survey'])
-			result[i]['jml_pemilih'] = jml
+			result[i]['jml_pemilih'] = str(jml)
 		return result,count
 	
 	def search(self,*p):
