@@ -1,11 +1,11 @@
 import time,datetime,string,random
 import web,StringIO
 from PIL import Image
-from core.model import model
-class upload_c1(model):
-	m = model()
+from core.mo_del import mo_del
+class upload_c1(mo_del):
+	m = mo_del()
 	def __init__(self):
-		model.__init__(self)
+		mo_del.__init__(self,'saksi')
 	
 	def index(self,data):
 		domain = web.ctx.env['HTTP_ORIGIN']
@@ -30,8 +30,11 @@ class upload_c1(model):
 				buff.seek(0)
 				im = Image.open(buff)
 				im.save(filedir+"/"+filename,'JPEG')	
-				sql = "update qc_daftar_nomor set c1_1=%s where nomor=%s"
-				self.query(sql,(filename,nomor))
+				
+				self.cl.update({'nomor':nomor},
+							{'$set':{'c1_1':filename}
+							})
+				
 				pesan += "C1 "
 		
 			if data['c1_2']:
@@ -41,8 +44,10 @@ class upload_c1(model):
 				buff.seek(0)
 				im = Image.open(buff)
 				im.save(filedir+"/"+filename,'JPEG')
-				sql = "update qc_daftar_nomor set c1_2=%s where nomor=%s"
-				self.query(sql,(filename,nomor))
+				self.cl.update({'nomor':nomor},
+							{'$set':{'c1_2':filename}
+							})
+				
 				pesan += "Plano "
 			
 			if data['c1_3']:
@@ -52,8 +57,9 @@ class upload_c1(model):
 				buff.seek(0)
 				im = Image.open(buff)
 				im.save(filedir+"/"+filename,'JPEG')
-				sql = "update qc_daftar_nomor set c1_3=%s where nomor=%s"
-				self.query(sql,(filename,nomor))
+				self.cl.update({'nomor':nomor},
+							{'$set':{'c1_3':filename}
+							})
 				pesan += "Daftar Hadir "
 			
 			return "<html><body><h3>Upload "+pesan+" berhasil!! </h3><br/>Klik untuk <a href='"+domain+"'>[kembali]</a></body></html>"

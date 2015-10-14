@@ -8,14 +8,26 @@ class nomor(crud):
 	title = "Daftar Saksi"
 	def __init__(self):
 		crud.__init__(self)
-		self.model = m_nomor()
+		
+		self.model = m_nomor({'nama':'',
+							'nomor':'','keterangan':'','foto':'',
+							'c1_1':'','c1_2':'','c1_3':'',
+							'disable_LK':{ 'total1':0,'total2':0},'disable_PR':{'total1':0,'total2':0},
+							'dpt_LK':{'total1':0,'total2':0,'total3':0,'total4':0},
+							'dpt_PR':{'total1':0,'total2':0,'total3':0,'total4':0},
+							'php_LK':{'total1':0,'total2':0,'total3':0,'total4':0},
+							'php_PR':{'total1':0,'total2':0,'total3':0,'total4':0},
+							'sah':{'total1':0,'total2':0},
+							'suara':{'total1':0,'total2':0,'total3':0,'total4':0},
+							'suratsuara':{'total1':0,'total2':0,'total3':0,'total4':0}
+							})
 		self.fields = [
 					{'field':'nama','type':'text','required':1,'search':1},
 					{'field':'nomor','type':'text','required':1,'search':1},
 					{'field':'keterangan','type':'text_area','search':1},
 					{'field':'foto','type':'foto'}
 					]
-		self.model.set_table(self.table_name)
+		
 	
 	def p(self,*p):
 		self.fields.append({'field':'c1_1','type':'text'})
@@ -42,17 +54,17 @@ class nomor(crud):
 				+str(len(fields)+1)+"'>Data Kosong</td></tr>"
 		
 		for i,rw in enumerate(data):
-			id = str(rw['id'])
+			id = str(rw['_id'])
 			className = "class='odd'" if (i+1)%2==0 else "" 
 			c += "<tr "+className+" id='"+id+"'>"
 			if write:
 				c += "<td class='action'><a title='Edit' href='"+self.base_url()+"edit/%(id)s/' class='edit'></a>"\
-					"<a title='Hapus' href='javascript:void(0)' onclick='del(this,%(id)s)' class='delete'></a></td>"\
+					"<a title='Hapus' href='javascript:void(0)' onclick='del(this,\"%(id)s\")' class='delete'></a></td>"\
 					 % {'id':id}
 			for field in fields:
 				if field['field']=='c1_1' or field['field']=='c1_2': continue
 				c += "<td>"+self.get_cell(rw[field['field']],field['type'])+"</td>"
-			sms  = self.model.get_sms(rw['nomor'])
+			sms  = ''#self.model.get_sms(rw['nomor'])
 			c += "<td style='min-width: 250px; white-space:normal;'>"+sms+"</td>"
 			
 			c += "<td><a href='/image/f/"+rw['c1_1']+"' target='_blank'>Sudah Ada</a></td>" if rw['c1_1'] else "<td></td>"  
@@ -62,27 +74,11 @@ class nomor(crud):
 			c += "</tr>"
 		return c
 	
-	def add(self,data=None):
-		
-		try:
-			return crud.add(self,data)
-		except IntegrityError as i:
-			cont = self.get_error("Error : Nomor sudah ada")
-			self.content += cont
-			return crud.add(self,data)
-	
-	def edit(self,id,data=None):
-		try:
-			return crud.edit(self,id,data)
-		except IntegrityError as i:
-			cont = self.get_error("Error : Nomor sudah ada")
-			self.content += cont
-			return crud.edit(self,id)
 
-from models.m_crud import m_crud
-class m_nomor(m_crud):
-	def __init__(self):
-		m_crud.__init__(self,'qc_daftar_nomor')
+from models.mo_crud import mo_crud
+class m_nomor(mo_crud):
+	def __init__(self,structure):
+		mo_crud.__init__(self,'saksi',structure)
 	
 	def get_sms(self,nomor):
 		sql = """SELECT 

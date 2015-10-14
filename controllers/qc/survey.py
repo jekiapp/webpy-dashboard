@@ -15,8 +15,7 @@ class survey(crud):
 					{'field':'alamat','type':'text_area'},
 					{'field':'nomor_HP','type':'text'},
 					]
-		
-		
+				
 	def add(self,data=None):
 		surveyor = self.model.get_surveyor()
 		surveyor = [{"key":str(x['id']),"val":x["surveyor"]} for x in surveyor]
