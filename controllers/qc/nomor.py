@@ -64,7 +64,7 @@ class nomor(crud):
 			for field in fields:
 				if field['field']=='c1_1' or field['field']=='c1_2': continue
 				c += "<td>"+self.get_cell(rw[field['field']],field['type'])+"</td>"
-			sms  = ''#self.model.get_sms(rw['nomor'])
+			sms  = self.model.get_sms(rw)
 			c += "<td style='min-width: 250px; white-space:normal;'>"+sms+"</td>"
 			
 			c += "<td><a href='/image/f/"+rw['c1_1']+"' target='_blank'>Sudah Ada</a></td>" if rw['c1_1'] else "<td></td>"  
@@ -80,30 +80,27 @@ class m_nomor(mo_crud):
 	def __init__(self,structure):
 		mo_crud.__init__(self,'saksi',structure)
 	
-	def get_sms(self,nomor):
-		sql = """SELECT 
-				concat(
-				if(b.nomor,'datapemilihlakilaki ',''),
-				if(c.nomor,'datapemilihperempuan ',''),
-				if(d.nomor,'penggunahakpilihlakilaki ',''),
-				if(e.nomor,'penggunahakpilihperempuan ',''),
-				if(f.nomor,'sah ',''),
-				if(g.nomor,'penggunaansuratsuara ',''),
-				if(h.nomor,'suara ',''),
-				if(i.nomor,'pemilihdisabellakilaki ',''),
-				if(j.nomor,'pemilihdisabelperempuan ','')
-				) as sms
-				FROM qc_daftar_nomor a 
-				left join c1_dpt_LK b on a.nomor=b.nomor
-				left join c1_dpt_PR c on a.nomor=c.nomor
-				left join c1_php_LK d on a.nomor=d.nomor
-				left join c1_php_PR e on a.nomor=e.nomor
-				left join c1_sah f on a.nomor=f.nomor
-				left join c1_suratsuara g on a.nomor=g.nomor
-				left join c1_suara h on a.nomor=h.nomor
-				left join c1_disable_LK i on a.nomor=i.nomor
-				left join c1_disable_PR j on a.nomor=j.nomor
-				
-				where a.nomor=%s"""
-		return self.get_query(sql,(nomor,))[0]['sms']
+	def get_sms(self,res):
+		ret = ''
+		if res['dpt_LK']['sent']==1:
+			ret+=' datapemilihlakilaki'
+		if res['dpt_PR']['sent']==1:
+			ret+=' datapemilihperempuan'
+		if res['php_LK']['sent']==1:
+			ret+=' penggunahakpilihlakilaki'
+		if res['php_PR']['sent']==1:
+			ret+=' penggunahakpilihperempuan'
+		if res['sah']['sent']==1:
+			ret+=' sah'
+		if res['suratsuara']['sent']==1:
+			ret+=' suratsuara'
+		if res['suara']['sent']==1:
+			ret+=' suara'
+		if res['disable_LK']['sent']==1:
+			ret+=' pemilihdisabellakilaki'
+		if res['disable_PR']['sent']==1:
+			ret+=' pemilihdisabelperempuan'
+		
+			 
+		return ret
 	
