@@ -43,7 +43,11 @@ class crud(controller):
 		return self.p(page)
 	
 	def back(self):
-		bck_str = getattr(web.config._session,self.CN)['back']
+		bck_str = ""
+		try:
+			bck_str = getattr(web.config._session,self.CN)['back']
+		except:
+			pass
 		web.seeother(self.base_url()+bck_str)
 	
 	def p(self,page=1):

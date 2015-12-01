@@ -7,7 +7,7 @@ class mo_del:
 	
 	password = web.config.db_password;
 	def __init__(self,cl=None):
-		client = MongoClient('mongodb://root:'+self.password+'@localhost:27017/')
+		client = MongoClient('mongodb://localhost:27017/')
 		self.db = client.pilkada
 		self.Id = ObjectId
 		self.SON = SON
