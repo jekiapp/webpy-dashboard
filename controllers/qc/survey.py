@@ -15,6 +15,8 @@ class survey(crud):
 					{'field':'alamat','type':'text_area'},
 					{'field':'nomor_HP','type':'text'},
 					]
+		#this is just test
+		
 				
 	def add(self,data=None):
 		surveyor = self.model.get_surveyor()
