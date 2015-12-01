@@ -34,7 +34,7 @@ class survey(crud):
 			self.content += self.get_sukses('Data Berhasil Disimpan')
 			return crud.add(self)
 		
-	def edit(self,id,data=None):
+	def edit(self,_id,data=None):
 		surveyor = self.model.get_surveyor()
 		surveyor = [{"key":str(x['id']),"val":x["surveyor"]} for x in surveyor]
 		self.fields[0].update({'attr':'disabled=1','type':'combo','value':surveyor})
@@ -42,19 +42,19 @@ class survey(crud):
 		
 		
 		try:
-			return crud.edit(self,id,data)
+			return crud.edit(self,_id,data)
 		except SurveyException as e:
 			self.content += self.get_warning(str(e))
 			self.content += self.get_sukses('Data Berhasil Disimpan')
-			return crud.edit(self,id)
+			return crud.edit(self,_id)
 		except DPTException as e:
 			self.content += self.get_sukses(str(e))
 			self.content += self.get_sukses('Data Berhasil Disimpan')
-			return crud.edit(self,id)
+			return crud.edit(self,_id)
 	
-	def update(self,id,fields,data):
+	def update(self,_id,fields,data):
 		fields.pop(0);fields.pop(0)
-		crud.update(self,id,fields,data)
+		crud.update(self,_id,fields,data)
 
 from models.mo_crud import mo_crud
 

@@ -48,7 +48,7 @@ class index:
 			except ImportError:
 				split = module_name.split(".")
 				args.append(split.pop())
-				if len(split)==1: return web.notfound()
+				if len(split)==1: return "cuks"#web.notfound()
 				module_name = ".".join(split)
 			except Exception as e: return e
 			else:
