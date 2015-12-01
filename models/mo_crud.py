@@ -13,8 +13,9 @@ class mo_crud(mo_del):
 	def select(self,limit,page=1,orderby=[('_id',-1)]):
 		page -= 1
 		page *= limit
-		orderby.append((self.embed+'._id',-1))
+		
 		if self.embed:
+			orderby.append((self.embed+'._id',-1))
 			result = self.cl.aggregate([
 							{'$unwind':'$'+self.embed},
 							{'$sort':self.SON(orderby)},
@@ -30,9 +31,7 @@ class mo_crud(mo_del):
 		else:
 			result = self.cl.find(skip=page,limit=limit,sort=orderby)
 			count = result.count()
-		
-		
-		return list(result),count
+			return list(result),count
 	
 	def search(self,cols,txt,limit,page=1,orderby=[('_id',-1)]):
 		page -= 1
