@@ -48,7 +48,7 @@ class index:
 			except ImportError:
 				split = module_name.split(".")
 				args.append(split.pop())
-				if len(split)==1: return "cuks"#web.notfound()
+				if len(split)==1: return web.notfound()
 				module_name = ".".join(split)
 			except Exception as e: return e
 			else:
@@ -69,7 +69,7 @@ class index:
 			if web.config.debug:
 				return str(traceback.format_exc())
 			else:
-				return str(traceback.format_exc())#web.notfound()
+				return web.notfound()
 	
 	def POST(self,url):
 		if not url:
@@ -114,7 +114,7 @@ class index:
 			if web.config.debug:
 				return str(traceback.format_exc())
 			else:
-				return str(traceback.format_exc())#web.notfound()
+				return web.notfound()
 
 
 app = web.application(urls, globals())

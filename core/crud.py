@@ -65,7 +65,7 @@ class crud(controller):
 			return self.list(result,count,page)
 		except: 
 			del getattr(web.config._session,self.CN)['back']
-			
+			return traceback.format_exception(*sys.exc_info())
 			if web.config.debug:
 				return traceback.format_exception(*sys.exc_info())
 			else:
