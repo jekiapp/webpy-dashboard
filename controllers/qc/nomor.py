@@ -12,14 +12,14 @@ class nomor(crud):
 		self.model = m_nomor({'nama':'',
 							'nomor':'','keterangan':'','foto':'',
 							'c1_1':'','c1_2':'','c1_3':'',
-							'disable_LK':{ 'total1':0,'total2':0},'disable_PR':{'total1':0,'total2':0},
-							'dpt_LK':{'total1':0,'total2':0,'total3':0,'total4':0},
-							'dpt_PR':{'total1':0,'total2':0,'total3':0,'total4':0},
-							'php_LK':{'total1':0,'total2':0,'total3':0,'total4':0},
-							'php_PR':{'total1':0,'total2':0,'total3':0,'total4':0},
-							'sah':{'total1':0,'total2':0},
-							'suara':{'total1':0,'total2':0,'total3':0,'total4':0},
-							'suratsuara':{'total1':0,'total2':0,'total3':0,'total4':0}
+							'disable_LK':{ 'total1':0,'total2':0,'sent':0},'disable_PR':{'total1':0,'total2':0,'sent':0},
+							'dpt_LK':{'total1':0,'total2':0,'total3':0,'total4':0,'sent':0},
+							'dpt_PR':{'total1':0,'total2':0,'total3':0,'total4':0,'sent':0},
+							'php_LK':{'total1':0,'total2':0,'total3':0,'total4':0,'sent':0},
+							'php_PR':{'total1':0,'total2':0,'total3':0,'total4':0,'sent':0},
+							'sah':{'total1':0,'total2':0,'sent':0},
+							'suara':{'total1':0,'total2':0,'total3':0,'total4':0,'sent':0},
+							'suratsuara':{'total1':0,'total2':0,'total3':0,'total4':0,'sent':0}
 							})
 		self.fields = [
 					{'field':'nama','type':'text','required':1,'search':1},
