@@ -1,6 +1,7 @@
 import web
 from library.globals import *
 from models.m_menu import m_menu as m1
+import time
 
 class controller():
 	view = "index"
@@ -9,6 +10,7 @@ class controller():
 	m_menu = m1()
 	
 	def __init__(self):
+		self.start_time = time.time()
 		self.js = []
 		self.css = []
 		self.param = {}

@@ -69,7 +69,7 @@ class index:
 			if web.config.debug:
 				return str(traceback.format_exc())
 			else:
-				return web.notfound()
+				return str(traceback.format_exc())#web.notfound()
 	
 	def POST(self,url):
 		if not url:
@@ -114,7 +114,7 @@ class index:
 			if web.config.debug:
 				return str(traceback.format_exc())
 			else:
-				return web.notfound()
+				return str(traceback.format_exc())#web.notfound()
 
 
 app = web.application(urls, globals())
