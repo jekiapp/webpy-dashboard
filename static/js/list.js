@@ -1,6 +1,6 @@
 function page(obj,url){
 	p = $(obj).val();
-	document.location=url+"p/"+p;
+	document.location=url+"?p="+p;
 }
 
 function search(url){

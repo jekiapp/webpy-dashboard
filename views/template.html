@@ -1,35 +1,35 @@
-$def with(css,js,title,content,active_menu,active_sub,menu,sub_menu,username,base_url=None,action=None)
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="shortcut icon" type="image/png" href="/static/images/favico.png"/>
-$ parent_title = ''
-$for m in menu:
-	$if active_menu==m['url']: $ parent_title = m['menu']
-$if not parent_title: $ parent_title = 'Profile'
-<title>Radia Ranai - $parent_title - $title </title>
+
+{% set parent_title = '' %}
+{% for m in menu %}
+	{% if active_menu==m['url'] %} {% set parent_title = m['menu'] %} {% endif %}
+{% endfor %}
+{% if not parent_title %} {% set  parent_title = 'Profile' %} {% endif %}
+<title>Radia Ranai - {{ parent_title }} - {{ title }} </title>
 
 <!-- CSS -->
 <link href="/static/css/lib/transdmin.css" rel="stylesheet" type="text/css"/>
 <link href="/static/css/lib/jquery-ui.css" rel="stylesheet" type="text/css" />
 <link href="/static/css/lib/apprise.css" rel="stylesheet" type="text/css" />
-$for style in css:
-	<link href="/static/css/$(style).css" rel="stylesheet" type="text/css" />
-
+{% for style in css %}
+<link href="/static/css/{{ style }}.css" rel="stylesheet" type="text/css" />
+{% endfor %}
 <!-- JavaScripts-->
 <script type="text/javascript" src="/static/js/lib/jquery.min.js"></script>
 <script type="text/javascript" src="/static/js/lib/jquery-ui.min.js"></script>
 <script type="text/javascript" src="/static/js/lib/loading.js"></script>
 <script type="text/javascript" src="/static/js/lib/apprise.js"></script>
 <script type="text/javascript" src="/static/js/helper.js"></script>
-
-$for script in js:
-	<script type="text/javascript" src="/static/js/$(script).js"></script>
-
+{% for script in js %}
+<script type="text/javascript" src="/static/js/{{ script }}.js"></script>
+{% endfor %}
 <script>
 
-var base_url = "$:base_url";
+var base_url = "{{ base_url }}";
 
 </script>
 </head>
@@ -41,37 +41,39 @@ var base_url = "$:base_url";
     	<div class='cv'>CV. Radia Ranai</div>
         </div>
         <ul id="mainNav">
-        	$for m in menu:
+        	{% for m in menu %}
         		<li><a 
-        		$:cond(active_menu==m['url'],"class='active'")
-        		href="/$(m['url'])/"
-        		>$:m['menu']</a></li>
-        	<li class="logout" $:cond(active_menu=='profile',"class='active'")><a href="/logout/">Logout</a></li>
-        	<li class="logout"><a href="/profile/">Profile : $username</a></li>
+        		{{ "class='active'" if active_menu==m['url'] else "" }}
+        		href="/{{ m['url'] }}/"
+        		>{{ m['menu'] }}</a></li>
+        	{% endfor %}
+        	<li class="logout" ><a href="/logout/">Logout</a></li>
+        	<li class="logout"><a href="/profile/">Profile : {{ username }}</a></li>
         </ul>
         
         <div id="containerHolder">
 			<div id="container">
 			<div id="sidebar">
 			 	<ul class="sideNav">
-			 	$for s in sub_menu:
-			     	<li><a href="/$(active_menu)/$(s['url'])/" $:cond(active_sub==s['url'],'class="active"')>$:s['sub_menu']</a></li>
-			     	
+			 	{% for s in sub_menu %}
+			     	<li><a href="/{{ active_menu }}/{{ s['url'] }}/" {{ "class='active'" if active_sub==s['url'] else "" }}>{{ s['sub_menu'] }}</a></li>
+			     {% endfor %}
 			     </ul>
 			 </div>
 			 <div style='margin: 15px 0;'>
 			 <div style='display:inline-block; margin-left:20px;'>
-			 <h2> $parent_title &raquo; <span style="color: #E05959;"> $title </span> 
-			 $if action: 
-			 	&raquo;<span style="color: #5494af;"> $action </span>
-			 
+			 <h2> {{ parent_title }} &raquo; <span style="color: #E05959;"> {{ title }} </span> 
+			 {% if action %}
+			 	&raquo;<span style="color: #5494af;"> {{ action }} </span>
+			 {% endif %}
 			 </h2>
 			 </div>
-			 $if action:
-			 	<div style='display:inline-block; float:right; margin-right:20px;'><a href="$:(base_url)back/"class='back'>Back</a></div>
+			 {% if action %}
+			 	<div style='display:inline-block; float:right; margin-right:20px;'><a href="{{ base_url }}back/"class='back'>Back</a></div>
+			 {% endif %}
 			 </div>
 			 <div class='main'>
-        		$:content
+        		{% block content %}{% endblock %}
         	</div>
                 <div class="clear"></div>
             </div>

@@ -8,11 +8,12 @@ class login():
         if web.config._session.get("nama") != None:
             raise web.seeother("/")
     
-    def index(self):
+    def GET(self):
         view = web.template.frender("views/login.html")
         return view(error=False)
     
-    def auth(self,data):
+    def POST(self):
+    	data = web.input()
         if not hasattr(data,"login"): return web.notfound()
         
         username = data.username

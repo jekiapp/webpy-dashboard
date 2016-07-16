@@ -38,10 +38,27 @@ class crud(controller):
 		self.css.extend(["lib/apprise","crud"])
 		self.js.append("lib/apprise")
 	
-	def index(self,data=None):
-		page = 1
-		return self.p(page)
+	def GET(self,path=None):
+		
+		if path=='add/':
+			return self.add()
+		if path=='edit/':
+			return self.edit(self.input)
+		elif path=='back/':
+			return self.back()
+		
+		if not self.input:
+			self.input['p'] = 1
+		return self.p(self.input['p'])
 	
+	def POST(self,path):
+		if path=='add/':
+			return self.add(self.input)
+		elif path=='edit/':
+			return self.edit(self.input)
+		elif path=='nav/':
+			return self.nav(self.input)
+		
 	def back(self):
 		bck_str = ""
 		try:
@@ -56,7 +73,7 @@ class crud(controller):
 				self.tanggal=(getattr(web.config._session,self.CN)['bulan'],\
 							getattr(web.config._session,self.CN)['tahun'])
 				self.model.set_tgl(*self.tanggal)
-			getattr(web.config._session,self.CN)['back'] = 'p/'+str(page)
+			getattr(web.config._session,self.CN)['back'] = '?p='+str(page)
 			
 			page = int(page)
 			if page==0: raise
@@ -196,11 +213,12 @@ class crud(controller):
 		
 		return new_val,error
 	
-	def edit(self,id,data=None):
+	def edit(self,data):
 		if self.hak_akses !=2: return web.notfound()
 		self.js.append("form")
 		self.action = "Edit"
 		
+		id = data['id']
 		if data and 'simpan' in data:
 			self.update(id,self.fields[:],data)
 	
@@ -262,7 +280,7 @@ class crud(controller):
 			className = "class='odd'" if (i+1)%2==0 else "" 
 			c += "<tr "+className+" id='"+id+"'>"
 			if write:
-				c += "<td class='action'><a title='Edit' href='"+self.base_url()+"edit/%(id)s/' class='edit'></a>"\
+				c += "<td class='action'><a title='Edit' href='"+self.base_url()+"edit/?id=%(id)s' class='edit'></a>"\
 					"<a title='Hapus' href='javascript:void(0)' onclick='del(this,\"%(id)s\")' class='delete'></a></td>"\
 					 % {'id':id}
 			for field in fields:

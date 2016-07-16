@@ -12,7 +12,7 @@ def cond(condition,res1,res2=""):
 def get_global():
 	func = {
 		'cond':cond,
-		'base_url':base_url,
+		'base_url':base_url(),
 		'bulan':bulan
 	}
 	return func

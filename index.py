@@ -1,128 +1,40 @@
 #!/usr/bin/python
-import sys, os, exceptions, traceback,signal
-
+import sys, os, signal
+import web
 abspath = os.path.dirname(__file__)
 sys.path.append(abspath)
 os.chdir(abspath)
 
-import web,config
 
-web.config.db_host = config.host;
-web.config.db_user = config.user;
-web.config.db_password = config.password;
-web.config.db_database = config.database;
-web.config.debug = config.debug;
 
+import config
+
+web.config.db_host = config.db_host;
+web.config.db_user = config.db_user;
+web.config.db_password = config.db_password;
+web.config.db_name = config.db_name;
+
+web.config.debug = config.debug
 if web.config.debug:
 	os.kill(os.getpid(), signal.SIGINT)
 
+from route import *
 
-
-import controllers.index as con
-urls = (
-	'/(.*)', 'index',
-) 
-
-class index:
-	def GET(self,url=""):
-		
-		if not url:
-			return con.index().index()
-		routes = url.split('/')
-		
-		module_name = "controllers."
-		for route in routes:
-			if not route :
-				continue
-			module_name += route+"."
-		module_name = module_name[:-1]
-		
-		args = []
-		not_found = True
-		controller_module = None
-		class_name = ""
-		while not_found :
-			try:
-				class_name = str(module_name.split(".")[-1])
-				controller_module = __import__(module_name.lower(), globals(), locals(),class_name)
-			except ImportError:
-				split = module_name.split(".")
-				args.append(split.pop())
-				if len(split)==1: return web.notfound()
-				module_name = ".".join(split)
-			except Exception as e: return e
-			else:
-				not_found = False
-				
-		web.ctx.homepath = "/"+"".join([module_name.split('.')[x]+"/" for x in range(1,len(module_name.split('.')))])
-		
-		controller_instance = getattr(controller_module, class_name)()
-		if not args:
-			func_name = "index"
+class MyApp(web.application):
+	def handle(self):
+		if web.config.debug:
+			return web.application.handle(self)
 		else:
-			func_name = args.pop()
-		
-		args.reverse()
-		try:
-			return getattr(controller_instance,func_name)(*args)
-		except Exception:
-			if web.config.debug:
-				return str(traceback.format_exc())
-			else:
-				return web.notfound()
-	
-	def POST(self,url):
-		if not url:
-			return web.notfound()
-		
-		routes = url.split('/')
-		module_name = "controllers."
-		for route in routes:
-			if not route :
-				continue
-			module_name += route+"."
-		module_name = module_name[:-1]
-		
-		args = []
-		not_found = True
-		controller_module = None
-		class_name = ""
-		while not_found :
 			try:
-				class_name = str(module_name.split(".")[-1])
-				controller_module = __import__(module_name.lower(), globals(), locals(),class_name)
-			except ImportError:
-				split = module_name.split(".")
-				args.append(split.pop())
-				if len(split)==1: return web.notfound()
-				module_name = ".".join(split)
-			else:
-				not_found = False
-		web.ctx.homepath = "/"+"".join([module_name.split('.')[x]+"/" for x in range(1,len(module_name.split('.')))])
-		controller_instance = getattr(controller_module, class_name)()
-		if not args:
-			func_name = "index"
-		else:
-			func_name = args.pop()
-		
-		args.reverse()
-		data = web.input()
-		args.append(data)
-		try:
-			return getattr(controller_instance,func_name)(*args)
-		except Exception:
-			if web.config.debug:
-				return str(traceback.format_exc())
-			else:
+				return web.application.handle(self)
+			except (KeyError,TypeError) as e: #jika parameter yang diharapkan tidak dikirimkan maka notfound
 				return web.notfound()
 
-
-app = web.application(urls, globals())
-
-
+app = MyApp(urls, globals())
 if web.config.get('_session') is None:
-	curdir = os.path.dirname(__file__)
-	session = web.session.Session(app, web.session.DiskStore(os.path.join(curdir,'sessions')),)
+	db = web.database(dbn='mysql', db=web.config.db_name, user=web.config.db_user, pw=web.config.db_password)
+	store = web.session.DBStore(db, 'sessions')
+	session = web.session.Session(app, store)
 	web.config._session = session
 
 application = app.wsgifunc()

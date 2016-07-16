@@ -17,7 +17,7 @@ $def with(error)
 
 	<div class='title'><img src="/static/images/logo.gif"  />Log-in</div>
     $if error : <div class="error">Username atau Password salah</div>
-	<form action="/login/auth/" method="post">
+	<form action="/login/" method="post">
 		<input type="text" name="username" placeholder="Username">
 		<input type="password" name="password" placeholder="Password">
 		<input type="submit" name="login" class="login login-submit" value="login">

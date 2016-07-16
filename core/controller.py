@@ -1,8 +1,10 @@
 import web
-from library.globals import *
+from library.globals import get_global
+from library.lib import base_url
 from models.m_menu import m_menu as m1
 import time
-
+from json import dumps as jsondumps,loads
+from jinja2 import Environment, FileSystemLoader
 class controller():
 	view = "index"
 	action = ""
@@ -22,10 +24,9 @@ class controller():
 		self.setattr()
 		self.menu = self.m_menu.get_menu(self.username)
 		self.sub_menu = self.m_menu.get_submenu(self.username,self.active_menu)
-		self.hak_akses = self.cekHak()
-		
+		self.hak_akses = self.cekHak() 
 		if self.hak_akses == 0:
-			raise notfound()
+			raise self.notfound()
 
 	def cekHak(self):	
 		hak_akses = 0
@@ -34,28 +35,29 @@ class controller():
 				hak_akses = int(sm['hak']);
 				break
 		return hak_akses
-
-	def render(self,template,param={}):
+	
+	
+	def render(self,view,param={}):
+		view += ".html"
 		
-		template += ".html"
-		view = web.template.frender("views/"+template,globals=self.globals())
-		if self.content: param.update({'content':self.content});
-		content = view(**param)
-		layout = web.template.frender("views/template.html",globals=self.globals())
+		env = Environment(loader=FileSystemLoader('views/'),trim_blocks=True,lstrip_blocks=True)
+		env.globals.update(get_global())
+		param.update({
+					'username':self.username,
+					'title':self.title,'action':self.action,'content':self.content,
+					'active_menu':self.active_menu,'active_sub':self.active_sub,
+					'menu':self.menu,'sub_menu':self.sub_menu,
+					'js':self.js,'css':self.css})
 		
-		return layout(
-			js=self.js,
-			css=self.css,
-			active_menu=self.active_menu,
-			active_sub = self.active_sub,
-			title=self.title,
-			action=self.action,
-			content=content,
-			menu=self.menu,
-			sub_menu = self.sub_menu,
-			base_url = self.base_url(),
-			username=self.username
-		)
+		full_page = env.get_template(view)\
+		.render(
+			**param
+			)
+		elapsed = "<!--"+str(time.time() - self.start_time)+"--!>"
+		return full_page+elapsed
+	
+	def get_elapsed(self):
+		return time.time() - self.start_time
 	
 	def get_menu(self):
 		username = self.session.get("nama")
@@ -63,7 +65,8 @@ class controller():
 	
 	def setattr(self):
 		setattr(self,'globals',get_global)
-		setattr(self,'notfound',notfound)
+		setattr(self,'notfound',web.notfound)
 		setattr(self,'base_url',base_url)
-		setattr(self,'redirect',redirect)
-		
+		setattr(self,'input',web.input())
+		setattr(self,'redirect',web.seeother)
+		web.ctx.homepath = "/"+self.active_menu+"/"+self.active_sub+"/"

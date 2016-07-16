@@ -1,54 +1,59 @@
-$def with(content,search,page,pages,tanggal=None)
+{% extends 'template.html' %}
+{% block content %}
+{% set url = base_url %}
 
-$ url = base_url()
-$if search: $ url += "search/"+search+"/"
-$if len(pages)>1 :
+{% if search %} {% set url = url+"search/"+search+"/" %} {% endif %} 
+
+{% if pages | length>1 %}
 	<div class="page_nav">
 		<a 
-		$if page==1: style="visibility:hidden;" 
-		href="$(url)p/$(page-1)" class="arrow left">&nbsp;</a>
-		<select id="page" onchange="page(this,'$url')">
-		$for p in pages:
-			<option $:cond(p==page,'selected="y"')>$p</option>
+		{{ 'style="visibility:hidden;"' if page==1 else '' }}  
+		href="{{url}}?p={{page-1}}" class="arrow left">&nbsp;</a>
+		<select id="page" onchange="page(this,'{{ url }}')">
+		{% for p in pages %}
+			<option {{ 'selected="y"' if p==page else '' }}>{{ p }}</option>
+		{% endfor %}
 		</select>
 		<a 
-		$if page==pages[-1]: style="visibility:hidden;" 
-		href="$(url)p/$(page+1)" class="arrow right">&nbsp;</a>
+		{{ 'style="visibility:hidden;"' if page==pages[-1] else '' }} 
+		href="{{ url }}?p={{ page+1 }}" class="arrow right">&nbsp;</a>
 	</div>
-
+{% endif %}
 <div style="float:right;">
-<form method='post' onsubmit="return search('$base_url()')">
+<form method='post' onsubmit="return search('{{ base_url }}')">
 <div class='search'>
-	<input type='text' id='txt' autocomplete="off" value="$:search"/>
+	<input type='text' id='txt' autocomplete="off" value="{{ search or '' }}"/>
 	<input type='submit'id='btn' value=""/>
 </div>
 </form>
 </div>
-$if tanggal:
+{% if tanggal %}
 	<div class="tanggal">
 		<a href="javascript:prev_month()" class="arrow left">&nbsp;</a>
-		<div id="bulan">$:bulan(tanggal[0]) - $tanggal[1]</div>
+		<div id="bulan">{{ bulan(tanggal[0]) }} - {{tanggal[1]}}</div>
 		<a href="javascript:next_month()" class="arrow right">&nbsp;</a>
-		<form action="$:base_url()nav/" id="frm_month" method="post"><input type="hidden" id="nav" name="nav"/></form>
+		<form action="{{ base_url }}nav/" id="frm_month" method="post"><input type="hidden" id="nav" name="nav"/></form>
 	</div>
-
+{% endif %}
 <div class='container'>
 <table cellpadding='0' cellspacing='0'>
-$:content
+{{ content }}
 </table>
 </div>
 
-$if len(pages)>1 :
+{% if pages | length>1 %}
 	<div class="page_nav">
 		<a 
-		$if page==1: style="visibility:hidden;" 
-		href="$(url)p/$(page-1)" class="arrow left">&nbsp;</a>
-		<select id="page" onchange="page(this,'$url')">
-		$for p in pages:
-			<option $:cond(p==page,'selected="y"')>$p</option>
+		{{ 'style="visibility:hidden;"' if page==1 else '' }}  
+		href="{{url}}?p={{page-1}}" class="arrow left">&nbsp;</a>
+		<select id="page" onchange="page(this,'{{ url }}')">
+		{% for p in pages %}
+			<option {{ 'selected="y"' if p==page else '' }}>{{ p }}</option>
+		{% endfor %}
 		</select>
 		<a 
-		$if page==pages[-1]: style="visibility:hidden;" 
-		href="$(url)p/$(page+1)" class="arrow right">&nbsp;</a>
+		{{ 'style="visibility:hidden;"' if page==pages[-1] else '' }} 
+		href="{{ url }}?p={{ page+1 }}" class="arrow right">&nbsp;</a>
 	</div>
-
+{% endif %}
+{% endblock %}

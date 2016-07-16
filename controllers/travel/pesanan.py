@@ -5,7 +5,7 @@ class pesanan(crud):
 	active_menu = "travel"
 	active_sub = "pesanan"
 	title = "Pesanan"
-
+	
 	def __init__(self):
 		crud.__init__(self,self.table_name,transaksi=True)
 		
@@ -19,6 +19,8 @@ class pesanan(crud):
 					{'field':'total','type':'currency'},
 					{'field':'foto','type':'foto'}
 					]
+	
+	
 	def p(self,*data):
 		self.fields.pop(1)
 		return crud.p(self,*data)

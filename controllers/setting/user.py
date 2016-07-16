@@ -20,6 +20,7 @@ class user(crud):
 					{'field':'foto','type':'foto'}
 					]
 	
+	
 	def p(self,*par):
 		self.fields.append({'field':'last-seen','type':'datetime','title':'Terakhir Login'})
 		del self.fields[2]

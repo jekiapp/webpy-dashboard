@@ -4,11 +4,11 @@ import sys,web
 
 from warnings import filterwarnings
 
-class model():
+class model:
 	host = web.config.db_host;
 	user = web.config.db_user;
 	password = web.config.db_password;
-	database = web.config.db_database;
+	database = web.config.db_name;
 	
 	def __init__(self):
 		filterwarnings('ignore', category = db.Warning)

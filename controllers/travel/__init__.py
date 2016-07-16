@@ -1,6 +1,6 @@
 import web
 
-class travel():
+class travel:
 
-	def index(self):
+	def GET(self):
 		web.seeother("pesanan/");
